@@ -3,10 +3,11 @@ import os.path as pa
 from docx import Document
 from docx.shared import Inches
 from docx.shared import Cm
+from PIL import Image
 
 IMG_WIDTH = 19.5
 MARGIN = 1
-SCREEN_DPI = 144
+SCREEN_DPI = 144    #on my 1920 x 1080' monitor
 
 
 def createWordDocWithImgInDir():
@@ -24,9 +25,10 @@ def createWordDocWithImgInDir():
 	setDocMargins(doc)
 
 	for file in imgFileLst:
-		imgPixels = 12
-		imgWidthCm = imgPixels / SCREEN_DPI * 2.54
-		doc.add_picture(file, width=Cm(IMG_WIDTH))
+		im = Image.open(file)
+		imgWidthPixel, height = im.size
+		imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
+		doc.add_picture(file, width=Cm(min(IMG_WIDTH, imgWidthCm)))
 		doc.add_paragraph()
 
 	doc.save(targetWordFileName + targetWordFileExt)
