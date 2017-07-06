@@ -11,10 +11,15 @@ SCREEN_DPI = 144    #on my 1920 x 1080' monitor
 
 
 def createWordDocWithImgInDir():
+	'''
+	Python utility to add all the images of a directory to a new Word document in order to facilitate
+	documentation creation. The images are added in their file name ascending order.
+	'''
 	curDir = os.getcwd()
 
 	fileLst = os.listdir(curDir)
 	imgFileLst = list(filter(lambda name: ".jpg" in name,fileLst))
+	imgFileLst.sort()
 
 	doc = Document()
 
