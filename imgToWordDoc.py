@@ -20,6 +20,7 @@ def createWordDocWithImgInDir():
 
 	fileLst = os.listdir(curDir)
 	imgFileLst = list(filter(lambda name: ".jpg" in name,fileLst))
+	imgFileLst.sort(key=sortFileNames)
 
 	doc = Document()
 
@@ -44,6 +45,7 @@ def createWordDocWithImgInDir():
 	print("{0} file created with {1} image(s)".format(fullTargetFileName,i))
 
 
+def sortFileNames(fileName):
 	'''
 	Using this function, a list of file names containing 1.jpg, 11.jpg, 2.jpg will 
 	be ordered so: 1.jpg, 2.jpg, 11.jpg !
