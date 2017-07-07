@@ -28,6 +28,7 @@ def createWordDocWithImgInDir():
 	targetWordFileName = determineUniqueFileName(targetWordFileName, targetWordFileExt)
 
 	setDocMargins(doc)
+	i = 0
 
 	for file in imgFileLst:
 		im = Image.open(file)
@@ -35,9 +36,12 @@ def createWordDocWithImgInDir():
 		imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
 		doc.add_picture(file, width=Cm(min(IMG_WIDTH, imgWidthCm)))
 		doc.add_paragraph()
+		i += 1
 
-	doc.save(targetWordFileName + targetWordFileExt)
+	fullTargetFileName = targetWordFileName + targetWordFileExt
 
+	doc.save(fullTargetFileName)
+	print("{0} file created with {1} image(s)".format(fullTargetFileName,i))
 
 def setDocMargins(doc):
 	sections = doc.sections
