@@ -6,8 +6,8 @@ from docx.shared import Cm
 from PIL import Image
 import re
 
-IMG_WIDTH = 19.5
-MARGIN = 1
+IMG_MAX_WIDTH = 17.5    #anciennement 19.5
+LATERAL_MARGIN = 2          #anciennement 1
 SCREEN_DPI = 144    #on my 1920 x 1080' monitor
 
 
@@ -33,11 +33,18 @@ def createWordDocWithImgInDir():
 	i = 0
 
 	for file in imgFileLst:
+		#ajout d'un titre avant l'image
+		doc.add_heading(str(i + 1) + '. A', level=1)
+
+		#ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
 		im = Image.open(file)
 		imgWidthPixel, height = im.size
 		imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
-		doc.add_picture(file, width=Cm(min(IMG_WIDTH, imgWidthCm)))
-		doc.add_paragraph()
+		doc.add_picture(file, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
+
+		#ajout d'un paragraphe bullet points
+		paragraph = doc.add_paragraph('A')
+		paragraph.style = 'List Bullet'
 		i += 1
 
 	fullTargetFileName = targetWordFileName + targetWordFileExt
@@ -51,7 +58,7 @@ def sortFileNames(fileName):
 	Using this function, a list of file names containing 1.jpg, 11.jpg, 2.jpg will 
 	be ordered so: 1.jpg, 2.jpg, 11.jpg !
 	:param fileName: 
-	:return: 
+	:return: number in img file name as int
 	'''
 	m = re.search(r'^(\d+).*', fileName)
 
@@ -65,10 +72,10 @@ def setDocMargins(doc):
 	sections = doc.sections
 
 	for section in sections:
-		section.top_margin = Cm(MARGIN)
-		section.bottom_margin = Cm(MARGIN)
-		section.left_margin = Cm(MARGIN)
-		section.right_margin = Cm(MARGIN)
+		section.top_margin = Cm(1)
+		section.bottom_margin = Cm(1)
+		section.left_margin = Cm(LATERAL_MARGIN)
+		section.right_margin = Cm(LATERAL_MARGIN)
 
 
 def determineUniqueFileName(targetWordFileName, targetWordFileExt):
@@ -94,7 +101,6 @@ if __name__ == '__main__':
 
 '''
 Improvements:
-° insert title line with 1. A, 2. A, 3. A, etc before each image with style title 1
 ° accept command line parm (use argparse)
 ° ajout images à la fin ou au début du doc ou à un index arbitraire: 0 == début, -1 == fin (default), ou n. 
   Dans tous les cas, on crée toujours un nouveau doc !
