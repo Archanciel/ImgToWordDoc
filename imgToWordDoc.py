@@ -24,7 +24,8 @@ def createWordDocWithImgInDir():
 
 	doc = Document()
 
-	targetWordFileName = "hello"
+	#naming the created word file using the containing dir name
+	targetWordFileName = curDir.split('\\')[-1]
 	targetWordFileExt = ".docx"
 	targetWordFileName = determineUniqueFileName(targetWordFileName, targetWordFileExt)
 
@@ -90,3 +91,11 @@ if __name__ == '__main__':
 		createWordDocWithImgInDir()
 	except NameError as e:
 		print(e)
+
+'''
+Improvements:
+° insert title line with 1. A, 2. A, 3. A, etc before each image with style title 1
+° accept command line parm (use argparse)
+° ajout images à la fin ou au début du doc ou à un index arbitraire: 0 == début, -1 == fin (default), ou n. 
+  Dans tous les cas, on crée toujours un nouveau doc !
+'''
