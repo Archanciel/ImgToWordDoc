@@ -15,6 +15,16 @@ def createWordDocWithImgInDir():
 	'''
 	Python utility to add all the images of a directory to a new Word document in order to facilitate
 	documentation creation. The images are added in their file name ascending order.
+
+	*** USAGE ***
+
+	In a command window opened on the dir containing the images, simply type
+
+	python imgToWordDoc.py
+
+	This will create a new Word document whose name is the name of the current dir. In case
+	the dir already contains a Word documant with the same name, an incremented number is
+	appended to the file name !
 	'''
 	curDir = os.getcwd()
 
