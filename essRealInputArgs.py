@@ -14,5 +14,5 @@ parser.add_argument("-i", "--insertionPos", type=int, nargs="?", default=-1, hel
                                                                           "document is specified !")
 args = parser.parse_args()
 
-print(args.existingDoc)
+print(args.document)
 print(args.insertionPos)
