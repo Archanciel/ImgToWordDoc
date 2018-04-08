@@ -18,7 +18,8 @@ def createWordDocWithImgInDir():
 
 	*** USAGE ***
 
-	In a command window opened on the dir containing the images, simply type
+	In a command window opened on the dir containing the images, after copying the imgToWordDoc.py file
+	in it, simply type
 
 	python imgToWordDoc.py
 
