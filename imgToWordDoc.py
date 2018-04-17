@@ -10,6 +10,7 @@ import argparse
 IMG_MAX_WIDTH = 17.5  # anciennement 19.5
 LATERAL_MARGIN = 2  # anciennement 1
 SCREEN_DPI = 144  # on my 1920 x 1080' monitor
+WORD_FILE_EXT = ".docx"
 
 
 def getCommandLineArgs():
@@ -51,7 +52,7 @@ def openExistingOrCreateNewWordDoc(documentName):
 
     :return: either existing or brand new document.
     '''
-    if curDir.isfile(documentName):
+    if curDir.isfile(documentName + WORD_FILE_EXT):
         return Document(documentName)
     else:
         return Document()
@@ -81,18 +82,26 @@ def createWordDocWithImgInDir():
     imgFileLst = list(filter(lambda name: ".jpg" in name, fileLst))
     imgFileLst.sort(key=sortFileNames)
     doc = None
-
+     
     if userDocumentName:
-        doc = openExistingOrCreateNewWordDoc(userDocumentName)
-        targetWordFileName = userDocumentName
+        #user provided a document name. Either open the existing document
+        #or create a new empty one
+        if WORD_FILE_EXT in userDocumentName:
+            targetWordFileName = userDocumentName[:-5]
+        else:
+            targetWordFileName = userDocumentName
+        doc = openExistingOrCreateNewWordDoc(targetWordFileName)
     else:
+        #no document name provided, so name the created word file 
+        #using the containing dir name
+        if os.name == 'posix':
+            targetWordFileName = curDir.split('/')[-1]
+        else:
+            targetWordFileName = curDir.split('\\')[-1]
         doc = Document()
-
-        # naming the created word file using the containing dir name
-        targetWordFileName = curDir.split('\\')[-1]
-
+        
     targetWordFileName = determineUniqueFileName(targetWordFileName)
-
+ 
     setDocMargins(doc)
     i = 0
 
@@ -113,8 +122,8 @@ def createWordDocWithImgInDir():
 
 
     doc.save(targetWordFileName)
-    print("{0} file created with {1} image(s)".format(fullTargetFileName, i))
-
+    print("{0} file created with {1} image(s)".format(targetWordFileName, i))
+ 
 
 def sortFileNames(fileName):
     '''
@@ -148,15 +157,14 @@ def determineUniqueFileName(targetWordFileName):
 
     Ex: if hello.docx exists, returns hello1, hello2, etc
     '''
-    wordFileExt= "docx"
     i = 1
     lookupWordFileName = targetWordFileName
 
-    while curDir.isfile(lookupWordFileName + wordFileExt):
+    while curDir.isfile(lookupWordFileName + WORD_FILE_EXT):
         lookupWordFileName = targetWordFileName + str(i)
         i += 1
 
-    return lookupWordFileName
+    return lookupWordFileName + WORD_FILE_EXT
 
 
 if __name__ == '__main__':
@@ -164,10 +172,3 @@ if __name__ == '__main__':
         createWordDocWithImgInDir()
     except NameError as e:
         print(e)
-
-'''
-Improvements:
-° accept command line parm (use argparse)
-° ajout images à la fin ou au début du doc ou à un index arbitraire: 0 == début, -1 == fin (default), ou n. 
-  Dans tous les cas, on crée toujours un nouveau doc !
-'''
