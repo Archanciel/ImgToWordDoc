@@ -58,6 +58,24 @@ def openExistingOrCreateNewWordDoc(documentName):
         return Document()
 
 
+def getFilesInDir(directory):
+    '''
+    Returns the list of file names contained in the passed directory
+    :param directory:
+    :return:
+    '''
+    fileList = []
+
+    for fname in os.listdir(directory):
+        path = os.path.join(directory, fname)
+        if os.path.isdir(path):
+            # skip directories
+            continue
+        else:
+            fileList.append(fname)
+
+    return fileList
+
 def createWordDocWithImgInDir():
     '''
     Python utility to add all the images of a directory to a new Word document in order to facilitate
@@ -78,8 +96,8 @@ def createWordDocWithImgInDir():
 
     curDir = os.getcwd()
 
-    fileLst = os.listdir(curDir)
-    imgFileLst = list(filter(lambda name: ".jpg" in name, fileLst))
+    fileLst = getFilesInDir(curDir)
+    imgFileLst = list(filter(lambda name: ".jpg" in name or ".png" in name, fileLst))
     imgFileLst.sort(key=sortFileNames)
     doc = None
      
