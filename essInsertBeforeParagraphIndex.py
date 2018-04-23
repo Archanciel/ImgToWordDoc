@@ -7,12 +7,23 @@ def getText(filename):
 
     for para in doc.paragraphs:
         if para.style.name == 'Heading 1':
-            fullText.append(para._body)
             if i == 2:
-                para.insert_paragraph_before('Lorem ipsum')
+                #adding 2 images to existing doc
+                insertImageBefore(para, 'D:/Development/Python/aa.png')
+                insertImageBefore(para, 'D:/Development/Python/ab.jpg')
             i += 1
     doc.save(filename)
-    return '\n'.join(fullText)
 
-print(getText('ImgToWordDoc4.docx'))
+    return i
+
+
+def insertImageBefore(paragraph, imageFileName):
+    paragraph.insert_paragraph_before('A', 'Heading 1')
+    newParagraph = paragraph.insert_paragraph_before('')
+    newParagraphRun = newParagraph.add_run()
+    newParagraphRun.add_picture(imageFileName)
+    paragraph.insert_paragraph_before('A', 'List Bullet')
+
+
+print(getText('ImgToWordDoc12.docx'))
 
