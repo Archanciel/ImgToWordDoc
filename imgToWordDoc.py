@@ -24,7 +24,7 @@ def getCommandLineArgs():
                     "is added in a new paragraph. To facilitate further edition, the image " \
                     "is preceded by a text line and followed by a bullet point section. " \
                     "The images are added according to the alphabetic order of their " \
-                    "file names, so use names starting by a number (i.e. 1.jpg, 2.jpg, ...). " \
+                    "file names, so use names starting by a number (i.e. 1.jpg, 2.png, ...). " \
                     "If no document name is specified, the created document has " \
                     "the same name as the containing dir. An existing document with " \
                     "same name is never overwritten. Instead, a new document with a " \
@@ -123,24 +123,23 @@ def createWordDocWithImgInDir():
     setDocMargins(doc)
     i = 0
 
-    for file in imgFileLst:
+    for fileName in imgFileLst:
         # ajout d'un titre avant l'image
-        doc.add_heading(str(i + 1) + '. A', level=1)
+        doc.add_heading('A', level=1)
 
         # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
-        im = Image.open(file)
+        im = Image.open(fileName)
         imgWidthPixel, height = im.size
         imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
-        doc.add_picture(file, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
+        doc.add_picture(fileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
 
         # ajout d'un paragraphe bullet points
         paragraph = doc.add_paragraph('A')
         paragraph.style = 'List Bullet'
         i += 1
 
-
     doc.save(targetWordFileName)
-    print("{0} file created with {1} image(s)".format(targetWordFileName, i))
+    print("{0} file created with {1} image(s). Manually add auto numbering to the Header 1 / Titre 1 style !".format(targetWordFileName, i))
  
 
 def sortFileNames(fileName):
