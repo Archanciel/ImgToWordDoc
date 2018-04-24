@@ -25,5 +25,5 @@ def insertImageBefore(paragraph, imageFileName):
     paragraph.insert_paragraph_before('A', 'List Bullet')
 
 
-print(getText('ImgToWordDoc12.docx'))
+print(getText('ImgToWordDoc.docx'))
 
