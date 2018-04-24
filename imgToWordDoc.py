@@ -139,7 +139,11 @@ def createWordDocWithImgInDir():
         i += 1
 
     doc.save(targetWordFileName)
-    print("{0} file created with {1} image(s). Manually add auto numbering to the Header 1 / Titre 1 style !".format(targetWordFileName, i))
+    resultMsg = "{0} file created with {1} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
+        targetWordFileName, i)
+    print(resultMsg)
+
+    return resultMsg
  
 
 def sortFileNames(fileName):
@@ -149,11 +153,11 @@ def sortFileNames(fileName):
     :param fileName:
     :return: number in img file name as int
     '''
-    m = re.search(r'^(\d+).*', fileName)
+    m = re.search(r'(\d+).*', fileName)
 
     if m == None:
         raise NameError(
-            "Invalid img file name encountered: {0}. Img file names must start with a number for them to be inserted in the right order !".format(
+            "Invalid img file name encountered: {0}. Img file names must contain a number for them to be inserted in the right order (depends on this number) !".format(
                 fileName))
 
     return int(m.group(1))
