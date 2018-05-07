@@ -14,7 +14,7 @@ document.save('demo.docx')
 
 '''
 Here's my solution. It has the advantage on the first proposition that it surrounds 
-the picture with a title (with style Header 1) and a section for additional comments. 
+the picture with a title (with style 'Header 1') and a section for additional comments. 
 Note that you have to do the insertions in the reverse order they appear in the Word 
 document.
 
