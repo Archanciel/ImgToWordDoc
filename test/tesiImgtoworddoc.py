@@ -60,3 +60,35 @@ class TestImgToWordDoc(unittest.TestCase):
         os.remove(wordFilePathName)
 
 
+    def testDetermineUniqueFileNameFileNotExist(self):
+        wordFileName = "notExistFileName"
+        wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
+        self.assertEqual("notExistFileName.docx", wordFileNameWithExt)
+
+
+    def testDetermineUniqueFileNameFileExistNoSuffixNumber(self):
+        wordFileName = "existingFileName"
+
+        fileNameExt = wordFileName + ".docx"
+
+        with open(fileNameExt, 'w') as f:
+            pass
+
+        wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
+        self.assertEqual("existingFileName1.docx", wordFileNameWithExt)
+
+        os.remove(fileNameExt)
+
+
+    def testDetermineUniqueFileNameFileExistWithoSuffixNumber(self):
+        wordFileName = "existingFileName1"
+
+        fileNameExt = wordFileName + ".docx"
+
+        with open(fileNameExt, 'w') as f:
+            pass
+
+        wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
+        self.assertEqual("existingFileName2.docx", wordFileNameWithExt)
+
+        os.remove(fileNameExt)
