@@ -15,7 +15,7 @@ WORD_FILE_EXT = ".docx"
 
 def getCommandLineArgs():
     '''
-    Uses arfparse to acquire the user optional command line arguments.
+    Uses argparse to acquire the user optional command line arguments.
 
     :return: document name (may be None) and insertion point
     '''
@@ -173,16 +173,20 @@ def setDocMargins(doc):
         section.right_margin = Cm(LATERAL_MARGIN)
 
 
-def determineUniqueFileName(targetWordFileName):
+def determineUniqueFileName(wordFileName):
     '''Verify if a file with same name exists and increment the name by one in this case.
 
     Ex: if hello.docx exists, returns hello1, hello2, etc
+
+    :param  wordFileName without extention
+    :return wordFileName + incremented number (if wordFileName exists in curr dir) +
+            word file extention
     '''
     i = 1
-    lookupWordFileName = targetWordFileName
+    lookupWordFileName = wordFileName
 
     while curDir.isfile(lookupWordFileName + WORD_FILE_EXT):
-        lookupWordFileName = targetWordFileName + str(i)
+        lookupWordFileName = wordFileName + str(i)
         i += 1
 
     return lookupWordFileName + WORD_FILE_EXT
