@@ -13,27 +13,18 @@ import imgToWordDoc
 import docx
 
 class TestImgToWordDoc(unittest.TestCase):
-    def testSortFileNames(self):
+    def testSortNumberedStringsFunc(self):
         listOfFileNames = ['2.jpg', '1.png', '32.jpg', '8.png', 'name12.png']
 
-        listOfFileNames.sort(key = imgToWordDoc.sortFileNames)
+        listOfFileNames.sort(key = imgToWordDoc.sortNumberedStringsFunc)
         self.assertEqual(['1.png', '2.jpg', '8.png', 'name12.png', '32.jpg'], listOfFileNames)
 
 
-    def testSortFileNamesInvalidFileName(self):
+    def testSortNumberedStringsFuncInvalidFileName(self):
         listOfFileNames = ['2.jpg', '1.png', '32.jpg', '8.png', 'name.png']
 
         with self.assertRaises(NameError):
-            listOfFileNames.sort(key = imgToWordDoc.sortFileNames)
-
-    def testCreateWordDocWithImgInDir(self):
-        imgToWordDoc.createWordDocWithImgInDir()
-
-        filesInDirList = os.listdir(currentdir)
-
-        self.assertIn('test.docx', filesInDirList)
-
-        os.remove(currentdir + '\\test.docx')
+            listOfFileNames.sort(key = imgToWordDoc.sortNumberedStringsFunc)
 
 
     def testCreateWordDocWithImgInDirIncrementFileName(self):
@@ -116,8 +107,26 @@ class TestImgToWordDoc(unittest.TestCase):
         os.remove(fileNameExtSuffixOne)
 
 
-    def testGetFilesInDir(self):
+    def testGetFilesInTestDir(self):
         curDir = os.getcwd()
 
         filesInDir = imgToWordDoc.getFilesInDir(curDir)
-        print(filesInDir)
+        self.assertEqual(4, len(filesInDir))
+
+
+    def testGetFilesInEmptyDir(self):
+        os.makedirs('empty')
+        os.chdir('empty')
+        curDir = os.getcwd()
+
+        filesInDir = imgToWordDoc.getFilesInDir(curDir)
+        self.assertEqual(0, len(filesInDir))
+
+        os.chdir('..')
+        os.removedirs('empty')
+
+
+    def testGetSortedImageFileNames(self):
+        curDir = os.getcwd()
+        imgFileLst = imgToWordDoc.getSortedImageFileNames(curDir)
+        self.assertEqual(['1.jpg', 'name3.jpg', '4.jpg'],imgFileLst)
