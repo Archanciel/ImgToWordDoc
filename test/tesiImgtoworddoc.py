@@ -60,13 +60,17 @@ class TestImgToWordDoc(unittest.TestCase):
         os.remove(wordFilePathName)
 
 
-    def testDetermineUniqueFileNameFileNotExist(self):
+    def testDetermineUniqueFileNameNoWordFileExist(self):
         wordFileName = "notExistFileName"
         wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
         self.assertEqual("notExistFileName.docx", wordFileNameWithExt)
 
 
-    def testDetermineUniqueFileNameFileExistNoSuffixNumber(self):
+    def testDetermineUniqueFileNameWordFileExistNoSuffixNumber(self):
+
+        # create the situation where there's 'existingFileName.docx' only
+        # in the current dir
+
         wordFileName = "existingFileName"
 
         fileNameExt = wordFileName + ".docx"
@@ -74,21 +78,46 @@ class TestImgToWordDoc(unittest.TestCase):
         with open(fileNameExt, 'w') as f:
             pass
 
+        # perform the test
+
         wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
         self.assertEqual("existingFileName1.docx", wordFileNameWithExt)
+
+        # clean up
 
         os.remove(fileNameExt)
 
 
-    def testDetermineUniqueFileNameFileExistWithoSuffixNumber(self):
-        wordFileName = "existingFileName1"
+    def testDetermineUniqueFileNameTwoWordFileExistOneWithSuffixNumber(self):
 
+        # create the situation where there's 'existingFileName.docx' and 'existingFileName1.docx'
+        # in the current dir
+
+        wordFileName = "existingFileName"
         fileNameExt = wordFileName + ".docx"
 
         with open(fileNameExt, 'w') as f:
             pass
 
+        wordFileNameSuffixOne = wordFileName + '1'
+        fileNameExtSuffixOne = wordFileNameSuffixOne + ".docx"
+
+        with open(fileNameExtSuffixOne, 'w') as f:
+            pass
+
+        # perform the test
+
         wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
         self.assertEqual("existingFileName2.docx", wordFileNameWithExt)
 
+        # clean up
+
         os.remove(fileNameExt)
+        os.remove(fileNameExtSuffixOne)
+
+
+    def testGetFilesInDir(self):
+        curDir = os.getcwd()
+
+        filesInDir = imgToWordDoc.getFilesInDir(curDir)
+        print(filesInDir)
