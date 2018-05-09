@@ -29,5 +29,7 @@ p = p.insert_paragraph_before('')
 r = p.add_run()
 r.add_picture(picPath)
 p = p.insert_paragraph_before('My picture title', 'Heading 1')
+print(p._p.style)
+print(p.text)
 
 document.save('demo_better.docx')

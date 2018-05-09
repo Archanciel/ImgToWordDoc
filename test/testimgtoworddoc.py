@@ -10,7 +10,7 @@ sys.path.insert(0,currentdir) # this instruction is necessary for successful imp
                               # the test is executed standalone
 
 import imgToWordDoc
-import docx
+from docx import Document
 
 class TestImgToWordDoc(unittest.TestCase):
     def testSortNumberedStringsFunc(self):
@@ -45,7 +45,7 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual("test.docx file created with 3 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !", returnedInfo)
         wordFilePathName = currentdir + '\\test.docx'
-        doc = docx.Document(wordFilePathName)
+        doc = Document(wordFilePathName)
         self.assertEqual(9, len(doc.paragraphs)) # 3 headers + 3 images + 3 bullet points sections
 
         os.remove(wordFilePathName)
@@ -111,7 +111,7 @@ class TestImgToWordDoc(unittest.TestCase):
         curDir = os.getcwd()
 
         filesInDir = imgToWordDoc.getFilesInDir(curDir)
-        self.assertEqual(4, len(filesInDir))
+        self.assertEqual(6, len(filesInDir))
 
 
     def testGetFilesInEmptyDir(self):
@@ -148,3 +148,33 @@ class TestImgToWordDoc(unittest.TestCase):
             imgToWordDoc.getSortedImageFileNames(curDir)
 
         os.remove(invalidFileName)
+
+
+    def testDetermineInsertionPointInExistingWordDocWithOneParagraph(self):
+        wordDoc = Document('oneImg.docx')
+        insertionPoint = 1
+        firstParagraph = wordDoc.paragraphs[0]
+
+        titleString = firstParagraph.text
+        self.assertEqual('My picture title', titleString)
+        self.assertEqual(titleString, imgToWordDoc.determineInsertionPoint(insertionPoint, wordDoc).text)
+
+
+    def testDetermineInsertionPointInExistingWordDocWithTwoParagraphsPos1(self):
+        wordDoc = Document('twoImg.docx')
+        insertionPoint = 1
+        firstParagraph = wordDoc.paragraphs[0]
+
+        titleString = firstParagraph.text
+        self.assertEqual('My picture one title', titleString)
+        self.assertEqual(titleString, imgToWordDoc.determineInsertionPoint(insertionPoint, wordDoc).text)
+
+
+    def testDetermineInsertionPointInExistingWordDocWithTwoParagraphsPos2(self):
+        wordDoc = Document('twoImg.docx')
+        insertionPoint = 2
+        firstParagraph = wordDoc.paragraphs[3] # 3 headers + 3 images + 3 bullet points sections
+
+        titleString = firstParagraph.text
+        self.assertEqual('My picture two title', titleString)
+        self.assertEqual(titleString, imgToWordDoc.determineInsertionPoint(insertionPoint, wordDoc).text)

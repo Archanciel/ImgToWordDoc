@@ -11,6 +11,8 @@ IMG_MAX_WIDTH = 17.5  # anciennement 19.5
 LATERAL_MARGIN = 2  # anciennement 1
 SCREEN_DPI = 144  # on my 1920 x 1080' monitor
 WORD_FILE_EXT = ".docx"
+HEADING_ONE_STYLE_NAME_ENGLISH = 'Heading1'
+HEADING_ONE_STYLE_NAME_FRENCH = 'Titre1'
 
 
 def getCommandLineArgs():
@@ -35,10 +37,10 @@ def getCommandLineArgs():
                                                             "to be added. For your convinience, the initial document is " \
                                                             "not modified. Instead, the original document is copied with a " \
                                                             "name incremented by one and the images are added to the copy.")
-    parser.add_argument("-i", "--insertionPos", type=int, nargs="?", default=-1,
+    parser.add_argument("-i", "--insertionPos", type=int, nargs="?",
                         help="paragraph number BEFORE which to insert the " \
-                             "images. default value is -1 --> end of document. " \
-                             "1 --> start of document (before paragraph 1). ")
+                             "images. 1 --> start of document (before paragraph 1). " \
+                             "0 --> end of document. ")
     args = parser.parse_args()
 
     return args.document, args.insertionPos
@@ -76,6 +78,22 @@ def getFilesInDir(directory):
             fileList.append(fname)
 
     return fileList
+
+
+def determineInsertionPoint(insertionPos, wordDoc):
+    currentHeadingNumber = 1
+
+    for p in wordDoc.paragraphs:
+        if p._p.style != HEADING_ONE_STYLE_NAME_ENGLISH and p._p.style != HEADING_ONE_STYLE_NAME_FRENCH:
+            continue
+
+        if insertionPos == currentHeadingNumber:
+            return p
+        else:
+            currentHeadingNumber += 1
+
+
+
 
 def createWordDocWithImgInDir():
     '''
@@ -118,28 +136,34 @@ def createWordDocWithImgInDir():
         doc = Document()
         
     targetWordFileName = determineUniqueFileName(targetWordFileName)
- 
-    setDocMargins(doc)
-    i = 0
+    addedImgNumber = 0
 
-    for fileName in imgFileLst:
-        # ajout d'un titre avant l'image
-        doc.add_heading('A', level=1)
+    if userInsertionPos != None:
+        paragraph = determineInsertionPoint(userInsertionPos, doc)
+    else:
+        setDocMargins(doc)
+        i = 0
 
-        # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
-        im = Image.open(fileName)
-        imgWidthPixel, height = im.size
-        imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
-        doc.add_picture(fileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
+        for fileName in imgFileLst:
+            # ajout d'un titre avant l'image
+            doc.add_heading('A', level=1)
 
-        # ajout d'un paragraphe bullet points
-        paragraph = doc.add_paragraph('A')
-        paragraph.style = 'List Bullet'
-        i += 1
+            # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
+            im = Image.open(fileName)
+            imgWidthPixel, height = im.size
+            imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
+            doc.add_picture(fileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
+
+            # ajout d'un paragraphe bullet points
+            paragraph = doc.add_paragraph('A')
+            paragraph.style = 'List Bullet'
+            i += 1
+
+        addedImgNumber = i
 
     doc.save(targetWordFileName)
-    resultMsg = "{0} file created with {1} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
-        targetWordFileName, i)
+    resultMsg = "{} file created with {} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
+        targetWordFileName, addedImgNumber)
     print(resultMsg)
 
     return resultMsg
