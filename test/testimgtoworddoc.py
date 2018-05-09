@@ -130,3 +130,21 @@ class TestImgToWordDoc(unittest.TestCase):
         curDir = os.getcwd()
         imgFileLst = imgToWordDoc.getSortedImageFileNames(curDir)
         self.assertEqual(['1.jpg', 'name3.jpg', '4.jpg'],imgFileLst)
+
+
+    def testGetSortedImageFileNamesWithInvalidFileName(self):
+        '''
+        Current dir contains image file whose name contains no number.
+        :return:
+        '''
+        curDir = os.getcwd()
+
+        invalidFileName = 'invalFileName.jpg'
+
+        with open(invalidFileName, 'w') as f:
+            pass
+
+        with self.assertRaises(NameError):
+            imgToWordDoc.getSortedImageFileNames(curDir)
+
+        os.remove(invalidFileName)
