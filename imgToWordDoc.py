@@ -81,6 +81,16 @@ def getFilesInDir(directory):
 
 
 def determineInsertionPoint(insertionPos, wordDoc):
+    '''
+    Returns the 'Heading1' paragraph before which to insert the new images. In case the
+    passed insertionPoint is 0 or is greater than the position of the last 'Header1'
+    paragraph, None is returned, which indicates that the insertion must occur at the end
+    of the document.
+
+    :param insertionPos:
+    :param wordDoc:
+    :return: existing paragraph or None
+    '''
     currentHeadingNumber = 1
 
     for p in wordDoc.paragraphs:
@@ -92,7 +102,23 @@ def determineInsertionPoint(insertionPos, wordDoc):
         else:
             currentHeadingNumber += 1
 
+    return None
 
+
+def insertImagesBeforeParagraph(paragraph, imgFileLst):
+    imgFileLst.sort(key=sortNumberedStringsFunc, reverse=True)
+
+    for imageFileName in imgFileLst:
+        paragraph = paragraph.insert_paragraph_before('Picture bullet section', 'List Bullet')
+        paragraph = paragraph.insert_paragraph_before('')
+        paragraphRun = paragraph.add_run()
+
+        im = Image.open(imageFileName)
+        imgWidthPixel, height = im.size
+        imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
+        paragraphRun.add_picture(imageFileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
+
+        paragraph = paragraph.insert_paragraph_before('My picture title', 'Heading 1')
 
 
 def createWordDocWithImgInDir():
@@ -140,24 +166,14 @@ def createWordDocWithImgInDir():
 
     if userInsertionPos != None:
         paragraph = determineInsertionPoint(userInsertionPos, doc)
+
+        if paragraph == None:
+            addImagesAtEndOfDocument(doc, imgFileLst)
+        else:
+            insertImagesBeforeParagraph(paragraph, imgFileLst)
     else:
         setDocMargins(doc)
-        i = 0
-
-        for fileName in imgFileLst:
-            # ajout d'un titre avant l'image
-            doc.add_heading('A', level=1)
-
-            # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
-            im = Image.open(fileName)
-            imgWidthPixel, height = im.size
-            imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
-            doc.add_picture(fileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
-
-            # ajout d'un paragraphe bullet points
-            paragraph = doc.add_paragraph('A')
-            paragraph.style = 'List Bullet'
-            i += 1
+        i = addImagesAtEndOfDocument(doc, imgFileLst)
 
         addedImgNumber = i
 
@@ -167,6 +183,35 @@ def createWordDocWithImgInDir():
     print(resultMsg)
 
     return resultMsg
+
+
+def addImagesAtEndOfDocument(wordDoc, ascSortedImgFileLst):
+    '''
+    Add the images in ascSortedImgFileLst at the end of the passed word document
+    :param  wordDoc: word document, either newly created or existing, normally already containing
+                     images.
+    :param  ascSortedImgFileLst: image file name list sorted in ascending order of the number
+                                 contained in their name.
+    :return: number of images added
+    '''
+    i = 0
+
+    for fileName in ascSortedImgFileLst:
+        # ajout d'un titre avant l'image
+        wordDoc.add_heading('A', level=1)
+
+        # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
+        im = Image.open(fileName)
+        imgWidthPixel, height = im.size
+        imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
+        wordDoc.add_picture(fileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
+
+        # ajout d'un paragraphe bullet points
+        paragraph = wordDoc.add_paragraph('A')
+        paragraph.style = 'List Bullet'
+        i += 1
+
+    return i
 
 
 def getSortedImageFileNames(containingDir):

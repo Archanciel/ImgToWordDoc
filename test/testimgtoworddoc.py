@@ -178,3 +178,24 @@ class TestImgToWordDoc(unittest.TestCase):
         titleString = firstParagraph.text
         self.assertEqual('My picture two title', titleString)
         self.assertEqual(titleString, imgToWordDoc.determineInsertionPoint(insertionPoint, wordDoc).text)
+
+
+    def testDetermineInsertionPointInExistingWordDocWithTwoParagraphsPos0(self):
+        '''
+        Insertion point 0 means the insertrion occurs at the end of document.
+        :return:
+        '''
+        wordDoc = Document('twoImg.docx')
+        insertionPoint = 0
+        self.assertIsNone(imgToWordDoc.determineInsertionPoint(insertionPoint, wordDoc))
+
+
+    def testDetermineInsertionPointInExistingWordDocWithTwoParagraphsPos3(self):
+        '''
+        Insertion point 3 exceeds the number of 'Heading1' paragraphs of the document and
+        will cause the insertrion to occur at the end of document.
+        :return:
+        '''
+        wordDoc = Document('twoImg.docx')
+        insertionPoint = 3
+        self.assertIsNone(imgToWordDoc.determineInsertionPoint(insertionPoint, wordDoc))
