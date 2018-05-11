@@ -1,6 +1,7 @@
-import os
+import os, sys
 import re
-
+from win32api import GetSystemMetrics
+import math
 import os.path as curDir
 from PIL import Image
 from docx import Document
@@ -9,16 +10,23 @@ import argparse
 
 IMG_MAX_WIDTH = 17.5  # anciennement 19.5
 LATERAL_MARGIN = 2  # anciennement 1
-SCREEN_DPI = 144  # on my 1920 x 1080' monitor
+
+# calculating SCREEN_DPI constant
+scnPxWidth = GetSystemMetrics(0)
+scnPxHeight = GetSystemMetrics(1)
+
+SCREEN_DPI = int(math.sqrt(scnPxWidth ** 2 + scnPxHeight ** 2) / 13.3) # 144 old value set on my 1920 x 1080' monitor
+
 WORD_FILE_EXT = ".docx"
 HEADING_ONE_STYLE_NAME_ENGLISH = 'Heading1'
 HEADING_ONE_STYLE_NAME_FRENCH = 'Titre1'
 
 
-def getCommandLineArgs():
+def getCommandLineArgs(argList):
     '''
     Uses argparse to acquire the user optional command line arguments.
 
+    :param argList: were acquired from sys.argv or set by test code
     :return: document name (may be None) and insertion point
     '''
     parser = argparse.ArgumentParser(
@@ -41,7 +49,7 @@ def getCommandLineArgs():
                         help="paragraph number BEFORE which to insert the " \
                              "images. 1 --> start of document (before paragraph 1). " \
                              "0 --> end of document. ")
-    args = parser.parse_args()
+    args = parser.parse_args(argList)
 
     return args.document, args.insertionPos
 
@@ -106,7 +114,17 @@ def determineInsertionPoint(insertionPos, wordDoc):
 
 
 def insertImagesBeforeParagraph(paragraph, imgFileLst):
+    '''
+    Inserts the images whose file name are in the passed imgFileLst before the passed paragraph.
+    Returns the number of inserted images.
+
+    :param paragraph: paragraph
+    :param imgFileLst:
+    :return:
+    '''
     imgFileLst.sort(key=sortNumberedStringsFunc, reverse=True)
+    insertedImgNumber = len(imgFileLst)
+    insertedImgIndex = insertedImgNumber
 
     for imageFileName in imgFileLst:
         paragraph = paragraph.insert_paragraph_before('Picture bullet section', 'List Bullet')
@@ -118,10 +136,13 @@ def insertImagesBeforeParagraph(paragraph, imgFileLst):
         imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
         paragraphRun.add_picture(imageFileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
 
-        paragraph = paragraph.insert_paragraph_before('My picture title', 'Heading 1')
+        paragraph = paragraph.insert_paragraph_before('Inserted img {}'.format(insertedImgIndex), 'Heading 1')
+        insertedImgIndex -= 1
+
+    return insertedImgNumber
 
 
-def createWordDocWithImgInDir():
+def createWordDocWithImgInDir(commandLineArgs=None):
     '''
     Python utility to add all the images of a directory to a new Word document in order to facilitate
     documentation creation. The images are added in their file name ascending order.
@@ -136,8 +157,12 @@ def createWordDocWithImgInDir():
     This will create a new Word document whose name is the name of the current dir. In case
     the dir already contains a Word documant with the same name, an incremented number is
     appended to the file name !
+    :param commandLineArgs: used only for unit testing only
     '''
-    userDocumentName, userInsertionPos = getCommandLineArgs()
+    if commandLineArgs == None:
+        commandLineArgs = sys.argv[1:]
+
+    userDocumentName, userInsertionPos = getCommandLineArgs(commandLineArgs)
 
     curDir = os.getcwd()
 

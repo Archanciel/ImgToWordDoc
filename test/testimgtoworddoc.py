@@ -111,7 +111,7 @@ class TestImgToWordDoc(unittest.TestCase):
         curDir = os.getcwd()
 
         filesInDir = imgToWordDoc.getFilesInDir(curDir)
-        self.assertEqual(6, len(filesInDir))
+        self.assertEqual(7, len(filesInDir))
 
 
     def testGetFilesInEmptyDir(self):
@@ -173,7 +173,7 @@ class TestImgToWordDoc(unittest.TestCase):
     def testDetermineInsertionPointInExistingWordDocWithTwoParagraphsPos2(self):
         wordDoc = Document('twoImg.docx')
         insertionPoint = 2
-        firstParagraph = wordDoc.paragraphs[3] # 3 headers + 3 images + 3 bullet points sections
+        firstParagraph = wordDoc.paragraphs[3] # 2 x (header + image + bullet points section
 
         titleString = firstParagraph.text
         self.assertEqual('My picture two title', titleString)
@@ -199,3 +199,16 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document('twoImg.docx')
         insertionPoint = 3
         self.assertIsNone(imgToWordDoc.determineInsertionPoint(insertionPoint, wordDoc))
+
+
+    def testInsertImagesBeforeParagraph(self):
+        wordDoc = Document('twoImgForInsertion.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        secondHeaderParagraph = wordDoc.paragraphs[3] # 2 x (header + image + bullet points section
+        imgFileLst = ['1.jpg', 'name3.jpg', '4.jpg']
+        insertedImgNumber = imgToWordDoc.insertImagesBeforeParagraph(secondHeaderParagraph, imgFileLst)
+        targerWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc.save(targerWordDoc)
+        self.assertEqual(3, insertedImgNumber)
+        self.assertEqual(initialParagraphNumber + 3 * 3, len(wordDoc.paragraphs))
+        os.remove(targerWordDoc)
