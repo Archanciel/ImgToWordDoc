@@ -60,13 +60,3 @@ paragraphRun.add_picture(picPath, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
 paragraph = paragraph.insert_paragraph_before('A title', 'Heading 1')
 
 document.save('demo_better.docx')
-
-from win32api import GetSystemMetrics
-import math
-
-scnPxWidth = GetSystemMetrics(0)
-print("Width ={}".format(scnPxWidth))
-scnPxHeight = GetSystemMetrics(1)
-print("Height ={}".format(scnPxHeight))
-scnDPI = math.sqrt(int(scnPxWidth) ** 2 + int(scnPxHeight) ** 2) / 13.3
-print("DPI={}".format(scnDPI))
