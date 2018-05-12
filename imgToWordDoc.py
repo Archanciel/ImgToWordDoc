@@ -124,10 +124,10 @@ def insertImagesBeforeParagraph(paragraph, imgFileLst):
     '''
     imgFileLst.sort(key=sortNumberedStringsFunc, reverse=True)
     insertedImgNumber = len(imgFileLst)
-    insertedImgIndex = insertedImgNumber
 
     for imageFileName in imgFileLst:
-        paragraph = paragraph.insert_paragraph_before('Picture bullet section', 'List Bullet')
+        imageName = imageFileName.split('.')[0]
+        paragraph = paragraph.insert_paragraph_before(getBulletParagraphText(imageName), 'List Bullet')
         paragraph = paragraph.insert_paragraph_before('')
         paragraphRun = paragraph.add_run()
 
@@ -136,13 +136,20 @@ def insertImagesBeforeParagraph(paragraph, imgFileLst):
         imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
         paragraphRun.add_picture(imageFileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
 
-        paragraph = paragraph.insert_paragraph_before('Inserted img {}'.format(insertedImgIndex), 'Heading 1')
-        insertedImgIndex -= 1
+        paragraph = paragraph.insert_paragraph_before(getTitleParagraphText(imageName), 'Heading 1')
 
     return insertedImgNumber
 
 
-def createWordDocWithImgInDir(commandLineArgs=None):
+def getTitleParagraphText(imageName):
+    return imageName + '_title'
+
+
+def getBulletParagraphText(imageName):
+    return imageName + '_bullet'
+
+
+def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
     '''
     Python utility to add all the images of a directory to a new Word document in order to facilitate
     documentation creation. The images are added in their file name ascending order.
@@ -153,6 +160,10 @@ def createWordDocWithImgInDir(commandLineArgs=None):
     in it, simply type
 
     python imgToWordDoc.py
+
+    or
+
+    python imgToWordDoc.py -d <existing Word doc> -i <insertion position>
 
     This will create a new Word document whose name is the name of the current dir. In case
     the dir already contains a Word documant with the same name, an incremented number is
@@ -193,14 +204,12 @@ def createWordDocWithImgInDir(commandLineArgs=None):
         paragraph = determineInsertionPoint(userInsertionPos, doc)
 
         if paragraph == None:
-            addImagesAtEndOfDocument(doc, imgFileLst)
+            addedImgNumber = addImagesAtEndOfDocument(doc, imgFileLst)
         else:
             insertImagesBeforeParagraph(paragraph, imgFileLst)
     else:
         setDocMargins(doc)
-        i = addImagesAtEndOfDocument(doc, imgFileLst)
-
-        addedImgNumber = i
+        addedImgNumber = addImagesAtEndOfDocument(doc, imgFileLst)
 
     doc.save(targetWordFileName)
     resultMsg = "{} file created with {} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
@@ -221,18 +230,19 @@ def addImagesAtEndOfDocument(wordDoc, ascSortedImgFileLst):
     '''
     i = 0
 
-    for fileName in ascSortedImgFileLst:
+    for imageFileName in ascSortedImgFileLst:
         # ajout d'un titre avant l'image
-        wordDoc.add_heading('A', level=1)
+        imageName = imageFileName.split('.')[0]
+        wordDoc.add_heading(getTitleParagraphText(imageName), level=1)
 
         # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
-        im = Image.open(fileName)
+        im = Image.open(imageFileName)
         imgWidthPixel, height = im.size
         imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
-        wordDoc.add_picture(fileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
+        wordDoc.add_picture(imageFileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
 
         # ajout d'un paragraphe bullet points
-        paragraph = wordDoc.add_paragraph('A')
+        paragraph = wordDoc.add_paragraph(getBulletParagraphText(imageName))
         paragraph.style = 'List Bullet'
         i += 1
 
@@ -306,6 +316,6 @@ def determineUniqueFileName(wordFileName):
 
 if __name__ == '__main__':
     try:
-        createWordDocWithImgInDir()
+        createOrUpdateWordDocWithImgInDir()
     except NameError as e:
         print(e)
