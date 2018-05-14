@@ -328,6 +328,32 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertIn('test.docx', filesInDirList)
         self.assertIn('test1.docx', filesInDirList)
 
+        wordDoc = Document('test.docx')
+
+        self.assertEqual(3, len(wordDoc.paragraphs) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
+
+        wordDoc = Document('test1.docx')
+
+        self.assertEqual(3, len(wordDoc.paragraphs) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
+
         os.remove(currentdir + '\\test.docx')
         os.remove(currentdir + '\\test1.docx')
 
@@ -337,14 +363,42 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual("test.docx file created with 3 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !", returnedInfo)
         wordFilePathName = currentdir + '\\test.docx'
-        doc = Document(wordFilePathName)
-        self.assertEqual(9, len(doc.paragraphs)) # 3 headers + 3 images + 3 bullet points sections
+        wordDoc = Document(wordFilePathName)
+        self.assertEqual(9, len(wordDoc.paragraphs)) # 3 headers + 3 images + 3 bullet points sections
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
 
         os.remove(wordFilePathName)
 
-'''
-Add asserts for header and bullet paragraph text in existing createOrUpdateWordDocWithImgInDir
-in creation mode unit tests !
 
+
+
+    def testCreateOrUpdateWordDocWithImgInDirImgCreationModeDocNameSpecified(self):
+        docName = 'monDocTest'
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(docName)])
+
+        self.assertEqual(docName + ".docx file created with 3 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !", returnedInfo)
+        wordFilePathName = currentdir + '\\{}.docx'.format(docName)
+        wordDoc = Document(wordFilePathName)
+        self.assertEqual(9, len(wordDoc.paragraphs)) # 3 headers + 3 images + 3 bullet points sections
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
+
+        os.remove(wordFilePathName)
+'''
 Still to test: createOrUpdateWordDocWithImgInDir in insertion mode
 '''
