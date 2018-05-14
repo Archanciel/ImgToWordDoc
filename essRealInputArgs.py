@@ -19,7 +19,13 @@ parser.add_argument("-i", "--insertionPos", type=int, nargs="?", default=-1, hel
                                                                           "1 --> start of document (before paragraph 1). "\
                                                                           "The insertion position is ignored if no existing "\
                                                                           "document is specified !")
+parser.add_argument("-p", "--pictures", nargs="*", help="paragraph number BEFORE which to insert the "\
+                                                                          "images. default value is -1 --> end of document. "\
+                                                                          "1 --> start of document (before paragraph 1). "\
+                                                                          "The insertion position is ignored if no existing "\
+                                                                          "document is specified !")
 args = parser.parse_args()
 
 print(args.document)
 print(args.insertionPos)
+print(args.pictures)
