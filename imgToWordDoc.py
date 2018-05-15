@@ -74,8 +74,10 @@ def openExistingOrCreateNewWordDoc(documentName):
 
     :return: either existing or brand new document.
     '''
-    if curDir.isfile(documentName + WORD_FILE_EXT):
-        return Document(documentName)
+    documentNameWithExt = documentName + WORD_FILE_EXT
+
+    if curDir.isfile(documentNameWithExt):
+        return Document(documentNameWithExt)
     else:
         return Document()
 
@@ -131,7 +133,7 @@ def insertImagesBeforeParagraph(paragraph, imgFileLst):
 
     :param paragraph: paragraph
     :param imgFileLst:
-    :return:
+    :return number of inserted images
     '''
     imgFileLst.sort(key=sortNumberedStringsFunc, reverse=True)
     insertedImgNumber = len(imgFileLst)
@@ -195,21 +197,22 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
         #user provided a document name. Either open the existing document
         #or create a new empty one
         if WORD_FILE_EXT in userDocumentName:
-            targetWordFileName = userDocumentName[:-5]
+            targetWordFileNameNoExt = userDocumentName[:-5]
         else:
-            targetWordFileName = userDocumentName
-        doc = openExistingOrCreateNewWordDoc(targetWordFileName)
+            targetWordFileNameNoExt = userDocumentName
+        doc = openExistingOrCreateNewWordDoc(targetWordFileNameNoExt)
     else:
         #no document name provided, so name the created word file 
         #using the containing dir name
         if os.name == 'posix':
-            targetWordFileName = curDir.split('/')[-1]
+            targetWordFileNameNoExt = curDir.split('/')[-1]
         else:
-            targetWordFileName = curDir.split('\\')[-1]
+            targetWordFileNameNoExt = curDir.split('\\')[-1]
         doc = Document()
         
-    targetWordFileName = determineUniqueFileName(targetWordFileName)
+    targetWordFileNameWithExt = determineUniqueFileName(targetWordFileNameNoExt)
     addedImgNumber = 0
+    isInsertionMode = False
 
     if userInsertionPos != None:
         paragraph = determineInsertionPoint(userInsertionPos, doc)
@@ -217,14 +220,24 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
         if paragraph == None:
             addedImgNumber = addImagesAtEndOfDocument(doc, imgFileLst)
         else:
-            insertImagesBeforeParagraph(paragraph, imgFileLst)
+            addedImgNumber = insertImagesBeforeParagraph(paragraph, imgFileLst)
+            isInsertionMode = True
     else:
         setDocMargins(doc)
         addedImgNumber = addImagesAtEndOfDocument(doc, imgFileLst)
 
-    doc.save(targetWordFileName)
-    resultMsg = "{} file created with {} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
-        targetWordFileName, addedImgNumber)
+    doc.save(targetWordFileNameWithExt)
+
+    if userInsertionPos != None:
+        if isInsertionMode:
+            resultMsg = "Inserted {} image(s) before header {} in document {} and saved the result to {}.".format(addedImgNumber, userInsertionPos, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt)
+        else:
+            resultMsg = "Added {} image(s) at end of document {} and saved the result to {}. Although insertion position {} was provided, no header paragraph was available at this position and the images were added at the end of the document !".format(
+                addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt, userInsertionPos)
+    else:
+        resultMsg = "{} file created with {} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
+            targetWordFileNameWithExt, addedImgNumber)
+
     print(resultMsg)
 
     return resultMsg

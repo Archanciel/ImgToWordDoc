@@ -31,8 +31,8 @@ class TestImgToWordDoc(unittest.TestCase):
         newWordDoc = Document()
         imgFileLst = ['1.jpg', 'name3.jpg', '4.jpg']
         insertedImgNumber = imgToWordDoc.addImagesAtEndOfDocument(newWordDoc, imgFileLst)
-        targerWordDoc = 'newDocWhereImgWereAdded.docx'
-        newWordDoc.save(targerWordDoc)
+        targetWordDoc = 'newDocWhereImgWereAdded.docx'
+        newWordDoc.save(targetWordDoc)
         self.assertEqual(3, insertedImgNumber)
         self.assertEqual(insertedImgNumber * 3, len(newWordDoc.paragraphs))
 
@@ -45,7 +45,7 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('4_title', newWordDoc.paragraphs[6].text)
         self.assertEqual('4_bullet', newWordDoc.paragraphs[8].text)
 
-        os.remove(targerWordDoc)
+        os.remove(targetWordDoc)
 
 
     def testDetermineUniqueFileNameNoWordFileExist(self):
@@ -204,8 +204,8 @@ class TestImgToWordDoc(unittest.TestCase):
         secondHeaderParagraph = wordDoc.paragraphs[3] # 2 x (header + image + bullet points section
         imgFileLst = ['1.jpg', 'name3.jpg', '4.jpg']
         insertedImgNumber = imgToWordDoc.insertImagesBeforeParagraph(secondHeaderParagraph, imgFileLst)
-        targerWordDoc = 'twoImgForInsertion1.docx'
-        wordDoc.save(targerWordDoc)
+        targetWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc.save(targetWordDoc)
         self.assertEqual(3, insertedImgNumber)
         self.assertEqual(initialParagraphNumber + 3 * 3, len(wordDoc.paragraphs))
 
@@ -224,7 +224,7 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('My picture two title', wordDoc.paragraphs[12].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[14].text)
 
-        os.remove(targerWordDoc)
+        os.remove(targetWordDoc)
 
 
     def testInsertImagesBeforeParagraphOneInTwoParagraphsDoc(self):
@@ -233,8 +233,8 @@ class TestImgToWordDoc(unittest.TestCase):
         firstHeaderParagraph = wordDoc.paragraphs[0] # 2 x (header + image + bullet points section
         imgFileLst = ['1.jpg', 'name3.jpg', '4.jpg']
         insertedImgNumber = imgToWordDoc.insertImagesBeforeParagraph(firstHeaderParagraph, imgFileLst)
-        targerWordDoc = 'twoImgForInsertion1.docx'
-        wordDoc.save(targerWordDoc)
+        targetWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc.save(targetWordDoc)
         self.assertEqual(3, insertedImgNumber)
         self.assertEqual(initialParagraphNumber + 3 * 3, len(wordDoc.paragraphs))
 
@@ -253,7 +253,7 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('My picture two title', wordDoc.paragraphs[12].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[14].text)
 
-        os.remove(targerWordDoc)
+        os.remove(targetWordDoc)
 
 
     def testInsertImagesBeforeParagraphOneInOneParagraphsDoc(self):
@@ -262,8 +262,8 @@ class TestImgToWordDoc(unittest.TestCase):
         firstHeaderParagraph = wordDoc.paragraphs[0] # 2 x (header + image + bullet points section
         imgFileLst = ['1.jpg', 'name3.jpg', '4.jpg']
         insertedImgNumber = imgToWordDoc.insertImagesBeforeParagraph(firstHeaderParagraph, imgFileLst)
-        targerWordDoc = 'oneImgForInsertion1.docx'
-        wordDoc.save(targerWordDoc)
+        targetWordDoc = 'oneImgForInsertion1.docx'
+        wordDoc.save(targetWordDoc)
         self.assertEqual(3, insertedImgNumber)
         self.assertEqual(initialParagraphNumber + 3 * 3, len(wordDoc.paragraphs))
 
@@ -279,7 +279,7 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('My picture one title', wordDoc.paragraphs[9].text)
         self.assertEqual('Picture one bullet section', wordDoc.paragraphs[11].text)
 
-        os.remove(targerWordDoc)
+        os.remove(targetWordDoc)
 
 
     def testInsertImagesBeforeParagraphOneInEmptiedDoc(self):
@@ -292,8 +292,8 @@ class TestImgToWordDoc(unittest.TestCase):
         firstHeaderParagraph = wordDoc.paragraphs[0] # 2 x (header + image + bullet points section
         imgFileLst = ['1.jpg', 'name3.jpg', '4.jpg']
         insertedImgNumber = imgToWordDoc.insertImagesBeforeParagraph(firstHeaderParagraph, imgFileLst)
-        targerWordDoc = 'emptyDocForInsertion1.docx'
-        wordDoc.save(targerWordDoc)
+        targetWordDoc = 'emptyDocForInsertion1.docx'
+        wordDoc.save(targetWordDoc)
         self.assertEqual(3, insertedImgNumber)
         self.assertEqual(initialParagraphNumber + 3 * 3, len(wordDoc.paragraphs))
 
@@ -306,7 +306,7 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('4_title', wordDoc.paragraphs[6].text)
         self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
 
-        os.remove(targerWordDoc)
+        os.remove(targetWordDoc)
 
 
     def testInsertImagesBeforeParagraphInNewDoc(self):
@@ -378,8 +378,6 @@ class TestImgToWordDoc(unittest.TestCase):
         os.remove(wordFilePathName)
 
 
-
-
     def testCreateOrUpdateWordDocWithImgInDirImgCreationModeDocNameSpecified(self):
         docName = 'monDocTest'
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(docName)])
@@ -399,6 +397,124 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
 
         os.remove(wordFilePathName)
-'''
-Still to test: createOrUpdateWordDocWithImgInDir in insertion mode
-'''
+
+
+    def testCreateOrUpdateWordDocInsertImagesBeforeParagraphTwoInTwoParagraphsDoc(self):
+        initialWordDocNameNoExt = 'twoImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i2'])
+        self.assertEqual("Inserted 3 image(s) before header 2 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
+        finalWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[0].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[12].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[14].text)
+
+        os.remove(finalWordDoc)
+
+
+    def testCreateOrUpdateWordDocInsertImagesBeforeParagraphOneInTwoParagraphsDoc(self):
+        initialWordDocNameNoExt = 'twoImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1'])
+        self.assertEqual("Inserted 3 image(s) before header 1 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
+        finalWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[9].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[12].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[14].text)
+
+        os.remove(finalWordDoc)
+
+
+    def testCreateOrUpdateWordDocInsertImagesBeforeParagraphOneInOneParagraphsDoc(self):
+        initialWordDocNameNoExt = 'oneImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1'])
+        self.assertEqual("Inserted 3 image(s) before header 1 in document oneImgForInsertion.docx and saved the result to oneImgForInsertion1.docx.", returnedInfo)
+        finalWordDoc = 'oneImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[9].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[11].text)
+
+        os.remove(finalWordDoc)
+
+
+    def testCreateOrUpdateWordDocInsertImagesBeforeParagraphOneInEmptiedDoc(self):
+        '''
+        Inserting into a Word document which were emptied works since wordDoc.paragraphs[0]
+        returns a paragraph with style 'Normal'
+        '''
+        initialWordDocNameNoExt = 'emptyDocForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1'])
+        self.assertEqual("Added 3 image(s) at end of document emptyDocForInsertion.docx and saved the result to emptyDocForInsertion1.docx. Although insertion position 1 was provided, no header paragraph was available at this position and the images were added at the end of the document !", returnedInfo)
+        finalWordDoc = 'emptyDocForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[1].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[3].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[4].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[6].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[7].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[9].text)
+
+        os.remove(finalWordDoc)
+
+
+    def testCreateOrUpdateWordDocInsertImagesAtEndOfEmptiedDoc(self):
+        pass
+#        wordDoc = Document('emptyDocForInsertion.docx')
+#        initialParagraphNumber = len(wordDoc.paragraphs)
