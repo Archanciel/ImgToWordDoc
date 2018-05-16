@@ -232,8 +232,12 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
         if isInsertionMode:
             resultMsg = "Inserted {} image(s) before header {} in document {} and saved the result to {}.".format(addedImgNumber, userInsertionPos, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt)
         else:
-            resultMsg = "Added {} image(s) at end of document {} and saved the result to {}. Although insertion position {} was provided, no header paragraph was available at this position and the images were added at the end of the document !".format(
-                addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt, userInsertionPos)
+            if userInsertionPos == 0:
+                resultMsg = "Added {} image(s) at end of document {} and saved the result to {}.".format(
+                    addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt)
+            else:
+                resultMsg = "Added {} image(s) at end of document {} and saved the result to {}. Although insertion position {} was provided, no header paragraph was available at this position and the images were added at the end of the document !".format(
+                    addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt, userInsertionPos)
     else:
         resultMsg = "{} file created with {} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
             targetWordFileNameWithExt, addedImgNumber)
