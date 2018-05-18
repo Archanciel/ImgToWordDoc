@@ -543,7 +543,60 @@ class TestImgToWordDoc(unittest.TestCase):
 
         os.remove(finalWordDoc)
 
+
+    def testCreateOrUpdateWordDocInsertImagesAtPosExceedingHeaderNumberInTwoParagraphsDoc(self):
+        initialWordDocNameNoExt = 'twoImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i20'])
+        self.assertEqual("Added 3 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx. Although insertion position 20 was provided, no header paragraph was available at this position and the images were added at the end of the document !", returnedInfo)
+        finalWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[0].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[3].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[5].text)
+
+        os.remove(finalWordDoc)
+
+
     def testCreateOrUpdateWordDocInsertImagesAtEndOfEmptiedDoc(self):
-        pass
-#        wordDoc = Document('emptyDocForInsertion.docx')
-#        initialParagraphNumber = len(wordDoc.paragraphs)
+        '''
+        Inserting into a Word document which were emptied works since wordDoc.paragraphs[0]
+        returns a paragraph with style 'Normal'
+        '''
+        initialWordDocNameNoExt = 'emptyDocForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0'])
+        self.assertEqual("Added 3 image(s) at end of document emptyDocForInsertion.docx and saved the result to emptyDocForInsertion1.docx.", returnedInfo)
+        finalWordDoc = 'emptyDocForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[1].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[3].text)
+
+        self.assertEqual('name3_title', wordDoc.paragraphs[4].text)
+        self.assertEqual('name3_bullet', wordDoc.paragraphs[6].text)
+
+        self.assertEqual('4_title', wordDoc.paragraphs[7].text)
+        self.assertEqual('4_bullet', wordDoc.paragraphs[9].text)
+
+        os.remove(finalWordDoc)
