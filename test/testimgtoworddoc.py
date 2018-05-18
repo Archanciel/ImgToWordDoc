@@ -600,3 +600,33 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('4_bullet', wordDoc.paragraphs[9].text)
 
         os.remove(finalWordDoc)
+
+
+    def testExplodeImageNumbersListSimple(self):
+        imageNumberSpecs = ['1', '3', '4', '2', '3', '4']
+        self.assertEqual([1, 2, 3, 4], imgToWordDoc.explodeImageNumbersList(imageNumberSpecs))
+
+
+    def testExplodeNumberSpec(self):
+        imageNumberSpec = '1-3'
+        self.assertEqual([1, 2, 3], imgToWordDoc.explodeNumberSpec(imageNumberSpec))
+
+
+    def testExplodeNumberSpecOneToOne(self):
+        imageNumberSpec = '1-1'
+        self.assertEqual([1], imgToWordDoc.explodeNumberSpec(imageNumberSpec))
+
+
+    def testExplodeNumberSpecRev(self):
+        imageNumberSpec = '3-1'
+        self.assertEqual([1, 2, 3], imgToWordDoc.explodeNumberSpec(imageNumberSpec))
+
+
+    def testExplodeNumberSpecRev(self):
+        imageNumberSpec = '9-12'
+        self.assertEqual([9, 10, 11, 12], imgToWordDoc.explodeNumberSpec(imageNumberSpec))
+
+
+    def testExplodeImageNumbersList(self):
+        imageNumberSpecs = ['1', '3', '4', '2-7', '9-12']
+        self.assertEqual([1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12], imgToWordDoc.explodeImageNumbersList(imageNumberSpecs))

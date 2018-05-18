@@ -27,7 +27,7 @@ def getCommandLineArgs(argList):
     Uses argparse to acquire the user optional command line arguments.
 
     :param argList: were acquired from sys.argv or set by test code
-    :return: document name (may be None) and insertion point
+    :return: document name (may be None), insertion point and image numbers list to add/insert
     '''
     parser = argparse.ArgumentParser(
         description="Adds or inserts all or part of the images contained in the current dir to a Word document. Each image " \
@@ -62,7 +62,7 @@ def getCommandLineArgs(argList):
                                                             "dir are added or inserted. ")
     args = parser.parse_args(argList)
 
-    return args.document, args.insertionPos
+    return args.document, args.insertionPos, args.pictures
 
 
 def openExistingOrCreateNewWordDoc(documentName):
@@ -186,7 +186,7 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
     if commandLineArgs == None:
         commandLineArgs = sys.argv[1:]
 
-    userDocumentName, userInsertionPos = getCommandLineArgs(commandLineArgs)
+    userDocumentName, userInsertionPos, imageNumbersToAdd = getCommandLineArgs(commandLineArgs)
 
     curDir = os.getcwd()
 
@@ -340,6 +340,31 @@ def determineUniqueFileName(wordFileName):
         i += 1
 
     return lookupWordFileName + WORD_FILE_EXT
+
+
+def explodeImageNumbersList(imageNumberSpec):
+    numbersSet = set([])
+
+    for item in imageNumberSpec:
+        if '-' in item:
+            explodedNumerList = explodeNumberSpec(item)
+            numbersSet = numbersSet.union(set(explodedNumerList))
+        else:
+            numbersSet.add(int(item))
+
+    sortedNumbers = list(numbersSet)
+    sortedNumbers.sort()
+
+    return sortedNumbers
+
+
+def explodeNumberSpec(numberSpec):
+    match = re.match('(\d+)\s*-\s*(\d+)', numberSpec)
+    fromTo = list(match.groups())
+    fromTo = list(map(lambda x : int(x), fromTo))
+    fromTo.sort()
+
+    return list(range(int(fromTo[0]), int(fromTo[1]) + 1))
 
 
 if __name__ == '__main__':
