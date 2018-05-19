@@ -343,6 +343,13 @@ def determineUniqueFileName(wordFileName):
 
 
 def explodeImageNumbersList(imageNumberSpec):
+    '''
+    Returns the unique sorted integers list representing the numbers specified in imageNumberSpec.
+
+    :param imageNumberSpec: like ['1', '3', '4', '2-7', '9-12']
+
+    :return: like [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]
+    '''
     numbersSet = set([])
 
     for item in imageNumberSpec:
@@ -358,13 +365,28 @@ def explodeImageNumbersList(imageNumberSpec):
     return sortedNumbers
 
 
-def explodeNumberSpec(numberSpec):
-    match = re.match('(\d+)\s*-\s*(\d+)', numberSpec)
-    fromTo = list(match.groups())
-    fromTo = list(map(lambda x : int(x), fromTo))
-    fromTo.sort()
+def explodeNumberSpec(dashNumberIntervalSpec):
+    '''
+    Explode a dashed number interval specification like '2-12' or 19-8' in order
+    to return an ascending ordered list of the integers representing the extention
+    of the passed interval.
 
-    return list(range(fromTo[0], fromTo[1] + 1))
+    :param dashNumberIntervalSpec: '2-12' or 19-8' or '2-2'
+
+    :return: sorted integers representing the extention of the passed interval
+    '''
+    match = re.match('(\d+)\s*-\s*(\d+)', dashNumberIntervalSpec)
+
+    # convert tuple to list so that map() can be applied to it
+    minMaxList = list(match.groups())
+
+    # map() returns an iterator. Build a list on the iterator
+    # so that the resulting list can be sorted
+    minMaxList = list(map(lambda x : int(x), minMaxList))
+
+    minMaxList.sort()
+
+    return list(range(minMaxList[0], minMaxList[1] + 1))
 
 
 if __name__ == '__main__':
