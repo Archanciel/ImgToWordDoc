@@ -364,7 +364,7 @@ def explodeNumberSpec(numberSpec):
     fromTo = list(map(lambda x : int(x), fromTo))
     fromTo.sort()
 
-    return list(range(int(fromTo[0]), int(fromTo[1]) + 1))
+    return list(range(fromTo[0], fromTo[1] + 1))
 
 
 if __name__ == '__main__':
