@@ -123,13 +123,13 @@ class TestImgToWordDoc(unittest.TestCase):
         os.removedirs('empty')
 
 
-    def testGetSortedImageFileNames(self):
+    def testFilterAndSortImageFileNames(self):
         curDir = os.getcwd()
-        imgFileLst = imgToWordDoc.getSortedImageFileNames(curDir)
+        imgFileLst = imgToWordDoc.filterAndSortImageFileNames(curDir)
         self.assertEqual(['1.jpg', 'name3.jpg', '4.jpg'],imgFileLst)
 
 
-    def testGetSortedImageFileNamesWithInvalidFileName(self):
+    def testFilterAndSortImageFileNamesWithInvalidFileName(self):
         '''
         Current dir contains image file whose name contains no number.
         :return:
@@ -142,7 +142,7 @@ class TestImgToWordDoc(unittest.TestCase):
             pass
 
         with self.assertRaises(NameError):
-            imgToWordDoc.getSortedImageFileNames(curDir)
+            imgToWordDoc.filterAndSortImageFileNames(curDir)
 
         os.remove(invalidFileName)
 
@@ -630,3 +630,24 @@ class TestImgToWordDoc(unittest.TestCase):
     def testExplodeImageNumbersList(self):
         imageNumberSpecs = ['1', '3', '4', '2-7', '9-12']
         self.assertEqual([1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12], imgToWordDoc.explodeImageNumbersList(imageNumberSpecs))
+
+
+    def testFilterAccordingToNumber(self):
+        unfilteredImgFileNameLst = ['1.png', 'name3.jpg', '2nom.jpg', '4.jpg']
+        numberLst = [1, 2, 5]
+        imgFileLst = imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
+        self.assertEqual(['1.png', '2nom.jpg'],imgFileLst)
+
+
+    def testFilterAccordingToNumberEmptyFileNameLst(self):
+        unfilteredImgFileNameLst = []
+        numberLst = [1, 2, 5]
+        imgFileLst = imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
+        self.assertEqual([],imgFileLst)
+
+
+    def testFilterAccordingToNumberEmptyNumberLst(self):
+        unfilteredImgFileNameLst = ['1.png', 'name3.jpg', '2nom.jpg', '4.jpg']
+        numberLst = []
+        imgFileLst = imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
+        self.assertEqual([],imgFileLst)

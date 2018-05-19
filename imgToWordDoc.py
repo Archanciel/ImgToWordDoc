@@ -190,7 +190,7 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
 
     curDir = os.getcwd()
 
-    imgFileLst = getSortedImageFileNames(curDir)
+    imgFileLst = filterAndSortImageFileNames(curDir, imageNumbersToAdd)
     doc = None
      
     if userDocumentName:
@@ -277,18 +277,26 @@ def addImagesAtEndOfDocument(wordDoc, ascSortedImgFileLst):
     return i
 
 
-def getSortedImageFileNames(containingDir):
+def filterAndSortImageFileNames(containingDir, imageNumbersToAdd =  None):
     '''
     Returns an ordered (ascending) list of image 'jpeg' or 'png' file names whose name
-    contains a number located in containingDir. The file names are sorted according to the
-    number they contains. If one of the image file names does not contain a number, an exception
-    is raised !
+    contains a number and which are located in containingDir. The file names are sorted according
+    to the number they contains. If one of the image file names does not contain a number, an
+    exception is raised !
 
+    If imageNumbersToAdd is provided, only the images file names containing a number which is
+    listed in imageNumbersToAdd are returned.
+
+    :param imageNumbersToAdd: list of integers sorted in ascending order
     :param containingDir:
     :return:
     '''
     fileLst = getFilesInDir(containingDir)
     imgFileLst = list(filter(lambda name: ".jpg" in name or ".png" in name, fileLst))
+
+    if imageNumbersToAdd:
+        imgFileLst = filterAccordingToNumber(imgFileLst, imageNumbersToAdd)
+
     imgFileLst.sort(key=sortNumberedStringsFunc)
 
     return imgFileLst
@@ -303,14 +311,14 @@ def sortNumberedStringsFunc(fileName):
     :param fileName:
     :return: number in img file name as int
     '''
-    m = re.search(r'(\d+).*', fileName)
+    nb = re.search(r'(\d+).*', fileName)
 
-    if m == None:
+    if nb == None:
         raise NameError(
             "Invalid img file name encountered: {0}. Img file names must contain a number for them to be inserted in the right order (depends on this number) !".format(
                 fileName))
 
-    return int(m.group(1))
+    return int(nb.group(1))
 
 
 def setDocMargins(doc):
@@ -375,7 +383,7 @@ def explodeNumberSpec(dashNumberIntervalSpec):
 
     :return: sorted integers representing the extention of the passed interval
     '''
-    match = re.match('(\d+)\s*-\s*(\d+)', dashNumberIntervalSpec)
+    match = re.match(r'(\d+)\s*-\s*(\d+)', dashNumberIntervalSpec)
 
     # convert tuple to list so that map() can be applied to it
     minMaxList = list(match.groups())
@@ -387,6 +395,17 @@ def explodeNumberSpec(dashNumberIntervalSpec):
     minMaxList.sort()
 
     return list(range(minMaxList[0], minMaxList[1] + 1))
+
+
+def filterAccordingToNumber(fileNameWithNumberLst, numberToKeepList):
+    filteredFileNameList = []
+
+    for fileName in fileNameWithNumberLst:
+        fileNameNumber = re.search(r'(\d+).*', fileName).group(1)
+        if int(fileNameNumber) in numberToKeepList:
+            filteredFileNameList.append(fileName)
+
+    return filteredFileNameList
 
 
 if __name__ == '__main__':
