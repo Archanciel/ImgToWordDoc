@@ -1,4 +1,5 @@
 import argparse
+import sys
 
 parser = argparse.ArgumentParser(description="Add all images contained in current dir to a Word document. Each image "\
                                              "is added in a new paragraph. To facilitate further edition, the image "\
@@ -26,6 +27,8 @@ parser.add_argument("-p", "--pictures", nargs="*", help="paragraph number BEFORE
                                                                           "document is specified !")
 args = parser.parse_args()
 
+
+print(sys.argv[1:])
 print(args.document)
 print(args.insertionPos)
 print(args.pictures)
