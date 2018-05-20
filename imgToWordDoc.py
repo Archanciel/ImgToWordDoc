@@ -190,7 +190,12 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
 
     curDir = os.getcwd()
 
-    imgFileLst = filterAndSortImageFileNames(curDir, imageNumbersToAdd)
+    explodedImageNumbersToAdd = None
+
+    if imageNumbersToAdd:
+        explodedImageNumbersToAdd = explodeImageNumbersList(imageNumbersToAdd)
+
+    imgFileLst = filterAndSortImageFileNames(curDir, explodedImageNumbersToAdd)
     doc = None
      
     if userDocumentName:
@@ -354,10 +359,19 @@ def explodeImageNumbersList(imageNumberSpec):
     '''
     Returns the unique sorted integers list representing the numbers specified in imageNumberSpec.
 
-    :param imageNumberSpec: like ['1', '3', '4', '2-7', '9-12']
+    :param imageNumberSpec: list of img nb specs like ['1', '3', '4', '2-7', '9-12'] or, in case of
+                            forcing args for argparse in unit testing context ['1 3 4 2-7 9-12']
 
     :return: like [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12]
     '''
+
+    # handling the case when unit testing causes argparse to return a list containing one string
+    # for the -p arg instead of a list of picture numer specs
+    if len(imageNumberSpec) == 1:
+        splittedImageNumberSpec = imageNumberSpec[0].split()
+        if len(splittedImageNumberSpec) > 1:
+            imageNumberSpec = splittedImageNumberSpec
+
     numbersSet = set([])
 
     for item in imageNumberSpec:

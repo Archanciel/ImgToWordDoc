@@ -1,6 +1,7 @@
 import inspect
 import os
 import sys
+import shutil
 import unittest
 
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
@@ -127,6 +128,13 @@ class TestImgToWordDoc(unittest.TestCase):
         curDir = os.getcwd()
         imgFileLst = imgToWordDoc.filterAndSortImageFileNames(curDir)
         self.assertEqual(['1.jpg', 'name3.jpg', '4.jpg'],imgFileLst)
+
+
+    def testFilterAndSortImageFileNamesWithImageNumberToAdd(self):
+        curDir = os.getcwd()
+        imageNumbersToAdd = [1, 3]
+        imgFileLst = imgToWordDoc.filterAndSortImageFileNames(curDir, imageNumbersToAdd)
+        self.assertEqual(['1.jpg', 'name3.jpg'],imgFileLst)
 
 
     def testFilterAndSortImageFileNamesWithInvalidFileName(self):
@@ -607,6 +615,21 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual([1, 2, 3, 4], imgToWordDoc.explodeImageNumbersList(imageNumberSpecs))
 
 
+    def testExplodeImageNumbersListSimpleAsString(self):
+        imageNumberSpecs = ['1 3 4 2 3 4']
+        self.assertEqual([1, 2, 3, 4], imgToWordDoc.explodeImageNumbersList(imageNumberSpecs))
+
+
+    def testExplodeImageNumbersListAsString(self):
+        imageNumberSpecs = ['1 3 4 2 13-14']
+        self.assertEqual([1, 2, 3, 4, 13, 14], imgToWordDoc.explodeImageNumbersList(imageNumberSpecs))
+
+
+    def testExplodeImageNumbersListOneElement(self):
+        imageNumberSpecs = ['1']
+        self.assertEqual([1], imgToWordDoc.explodeImageNumbersList(imageNumberSpecs))
+
+
     def testExplodeNumberSpec(self):
         imageNumberSpec = '1-3'
         self.assertEqual([1, 2, 3], imgToWordDoc.explodeNumberSpec(imageNumberSpec))
@@ -634,9 +657,16 @@ class TestImgToWordDoc(unittest.TestCase):
 
     def testFilterAccordingToNumber(self):
         unfilteredImgFileNameLst = ['1.png', 'name3.jpg', '2nom.jpg', '4.jpg']
-        numberLst = [1, 2, 5]
+        numberLst = [1, 2, 3, 5]
         imgFileLst = imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
-        self.assertEqual(['1.png', '2nom.jpg'],imgFileLst)
+        self.assertEqual(['1.png', 'name3.jpg', '2nom.jpg'],imgFileLst)
+
+
+    def testFilterAccordingToNumberNoMatch(self):
+        unfilteredImgFileNameLst = ['1.png', 'name3.jpg', '2nom.jpg', '4.jpg']
+        numberLst = [5, 6]
+        imgFileLst = imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
+        self.assertEqual([],imgFileLst)
 
 
     def testFilterAccordingToNumberEmptyFileNameLst(self):
@@ -651,3 +681,53 @@ class TestImgToWordDoc(unittest.TestCase):
         numberLst = []
         imgFileLst = imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
         self.assertEqual([],imgFileLst)
+
+    def testCreateOrUpdateWordDocInsertSelectedImagesAtEndInTwoParagraphsDoc(self):
+        testImgDir = currentdir + "\\images"
+        src_files = os.listdir(testImgDir)
+
+        for file_name in src_files:
+            full_file_name = os.path.join(testImgDir, file_name)
+            if (os.path.isfile(full_file_name)):
+                shutil.copy(full_file_name, currentdir)
+
+        initialWordDocNameNoExt = 'twoImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+#        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0', '-p 1,2,5-7,10-9'])
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0', '-p 1 2 5-7 10-9 12'])
+        self.assertEqual("Added 6 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
+        finalWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[15].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[17].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[18].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[20].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[21].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[23].text)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[0].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[3].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[5].text)
+
+        os.remove(finalWordDoc)
+
+        for file_name in src_files:
+            os.remove(file_name)
