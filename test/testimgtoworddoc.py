@@ -333,11 +333,17 @@ class TestImgToWordDoc(unittest.TestCase):
 
         filesInDirList = os.listdir(currentdir)
 
+        wordDoc = Document('test.docx')
+        wordDoc1 = Document('test1.docx')
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(currentdir + '\\test.docx')
+        os.remove(currentdir + '\\test1.docx')
+
         self.assertIn('test.docx', filesInDirList)
         self.assertIn('test1.docx', filesInDirList)
 
-        wordDoc = Document('test.docx')
-
         self.assertEqual(3, len(wordDoc.paragraphs) / 3)
 
         self.assertEqual('1_title', wordDoc.paragraphs[0].text)
@@ -349,29 +355,28 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('4_title', wordDoc.paragraphs[6].text)
         self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
 
-        wordDoc = Document('test1.docx')
+        self.assertEqual(3, len(wordDoc1.paragraphs) / 3)
 
-        self.assertEqual(3, len(wordDoc.paragraphs) / 3)
+        self.assertEqual('1_title', wordDoc1.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc1.paragraphs[2].text)
 
-        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
-        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+        self.assertEqual('name3_title', wordDoc1.paragraphs[3].text)
+        self.assertEqual('name3_bullet', wordDoc1.paragraphs[5].text)
 
-        self.assertEqual('name3_title', wordDoc.paragraphs[3].text)
-        self.assertEqual('name3_bullet', wordDoc.paragraphs[5].text)
-
-        self.assertEqual('4_title', wordDoc.paragraphs[6].text)
-        self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
-
-        os.remove(currentdir + '\\test.docx')
-        os.remove(currentdir + '\\test1.docx')
+        self.assertEqual('4_title', wordDoc1.paragraphs[6].text)
+        self.assertEqual('4_bullet', wordDoc1.paragraphs[8].text)
 
 
     def testCreateOrUpdateWordDocWithImgInDirImgCreationMode(self):
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir()
-
-        self.assertEqual("test.docx file created with 3 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !", returnedInfo)
         wordFilePathName = currentdir + '\\test.docx'
         wordDoc = Document(wordFilePathName)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(wordFilePathName)
+
+        self.assertEqual("test.docx file created with 3 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !", returnedInfo)
         self.assertEqual(9, len(wordDoc.paragraphs)) # 3 headers + 3 images + 3 bullet points sections
 
         self.assertEqual('1_title', wordDoc.paragraphs[0].text)
@@ -382,17 +387,19 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('4_title', wordDoc.paragraphs[6].text)
         self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
-
-        os.remove(wordFilePathName)
 
 
     def testCreateOrUpdateWordDocWithImgInDirImgCreationModeDocNameSpecified(self):
         docName = 'monDocTest'
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(docName)])
-
-        self.assertEqual(docName + ".docx file created with 3 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !", returnedInfo)
         wordFilePathName = currentdir + '\\{}.docx'.format(docName)
         wordDoc = Document(wordFilePathName)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(wordFilePathName)
+
+        self.assertEqual(docName + ".docx file created with 3 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !", returnedInfo)
         self.assertEqual(9, len(wordDoc.paragraphs)) # 3 headers + 3 images + 3 bullet points sections
 
         self.assertEqual('1_title', wordDoc.paragraphs[0].text)
@@ -403,8 +410,6 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('4_title', wordDoc.paragraphs[6].text)
         self.assertEqual('4_bullet', wordDoc.paragraphs[8].text)
-
-        os.remove(wordFilePathName)
 
 
     def testCreateOrUpdateWordDocInsertImagesBeforeParagraphTwoInTwoParagraphsDoc(self):
@@ -412,11 +417,15 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i2'])
-        self.assertEqual("Inserted 3 image(s) before header 2 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+
+        self.assertEqual("Inserted 3 image(s) before header 2 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
         self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
 
         self.assertEqual('My picture one title', wordDoc.paragraphs[0].text)
@@ -434,19 +443,21 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('My picture two title', wordDoc.paragraphs[12].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[14].text)
 
-        os.remove(finalWordDoc)
-
 
     def testCreateOrUpdateWordDocInsertImagesBeforeParagraphOneInTwoParagraphsDoc(self):
         initialWordDocNameNoExt = 'twoImgForInsertion'
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1'])
-        self.assertEqual("Inserted 3 image(s) before header 1 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+
+        self.assertEqual("Inserted 3 image(s) before header 1 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
         self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
 
         self.assertEqual('1_title', wordDoc.paragraphs[0].text)
@@ -464,19 +475,21 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('My picture two title', wordDoc.paragraphs[12].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[14].text)
 
-        os.remove(finalWordDoc)
-
 
     def testCreateOrUpdateWordDocInsertImagesBeforeParagraphOneInOneParagraphsDoc(self):
         initialWordDocNameNoExt = 'oneImgForInsertion'
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1'])
-        self.assertEqual("Inserted 3 image(s) before header 1 in document oneImgForInsertion.docx and saved the result to oneImgForInsertion1.docx.", returnedInfo)
         finalWordDoc = 'oneImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+
+        self.assertEqual("Inserted 3 image(s) before header 1 in document oneImgForInsertion.docx and saved the result to oneImgForInsertion1.docx.", returnedInfo)
         self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
 
         self.assertEqual('1_title', wordDoc.paragraphs[0].text)
@@ -491,8 +504,6 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('My picture one title', wordDoc.paragraphs[9].text)
         self.assertEqual('Picture one bullet section', wordDoc.paragraphs[11].text)
 
-        os.remove(finalWordDoc)
-
 
     def testCreateOrUpdateWordDocInsertImagesBeforeParagraphOneInEmptiedDoc(self):
         '''
@@ -503,11 +514,15 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1'])
-        self.assertEqual("Added 3 image(s) at end of document emptyDocForInsertion.docx and saved the result to emptyDocForInsertion1.docx. Although insertion position 1 was provided, no header paragraph was available at this position and the images were added at the end of the document !", returnedInfo)
         finalWordDoc = 'emptyDocForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+
+        self.assertEqual("Added 3 image(s) at end of document emptyDocForInsertion.docx and saved the result to emptyDocForInsertion1.docx. Although insertion position 1 was provided, no header paragraph was available at this position and the images were added at the end of the document !", returnedInfo)
         self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
 
         self.assertEqual('1_title', wordDoc.paragraphs[1].text)
@@ -519,19 +534,21 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('4_title', wordDoc.paragraphs[7].text)
         self.assertEqual('4_bullet', wordDoc.paragraphs[9].text)
 
-        os.remove(finalWordDoc)
-
 
     def testCreateOrUpdateWordDocInsertImagesAtEndInTwoParagraphsDoc(self):
         initialWordDocNameNoExt = 'twoImgForInsertion'
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0'])
-        self.assertEqual("Added 3 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+
+        self.assertEqual("Added 3 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
         self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
 
         self.assertEqual('1_title', wordDoc.paragraphs[6].text)
@@ -548,8 +565,6 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('My picture two title', wordDoc.paragraphs[3].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[5].text)
-
-        os.remove(finalWordDoc)
 
 
     def testCreateOrUpdateWordDocInsertImagesAtPosExceedingHeaderNumberInTwoParagraphsDoc(self):
@@ -557,11 +572,15 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i20'])
-        self.assertEqual("Added 3 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx. Although insertion position 20 was provided, no header paragraph was available at this position and the images were added at the end of the document !", returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+
+        self.assertEqual("Added 3 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx. Although insertion position 20 was provided, no header paragraph was available at this position and the images were added at the end of the document !", returnedInfo)
         self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
 
         self.assertEqual('1_title', wordDoc.paragraphs[6].text)
@@ -578,8 +597,6 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('My picture two title', wordDoc.paragraphs[3].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[5].text)
-
-        os.remove(finalWordDoc)
 
 
     def testCreateOrUpdateWordDocInsertImagesAtEndOfEmptiedDoc(self):
@@ -591,10 +608,15 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0'])
-        self.assertEqual("Added 3 image(s) at end of document emptyDocForInsertion.docx and saved the result to emptyDocForInsertion1.docx.", returnedInfo)
         finalWordDoc = 'emptyDocForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+
+        self.assertEqual("Added 3 image(s) at end of document emptyDocForInsertion.docx and saved the result to emptyDocForInsertion1.docx.", returnedInfo)
 
         self.assertEqual(3, (finalParagraphNumber - initialParagraphNumber) / 3)
 
@@ -606,8 +628,6 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('4_title', wordDoc.paragraphs[7].text)
         self.assertEqual('4_bullet', wordDoc.paragraphs[9].text)
-
-        os.remove(finalWordDoc)
 
 
     def testExplodeImageNumbersListSimple(self):
@@ -691,10 +711,16 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0', '-p 1 2 5-7 10-9 12'])
-        self.assertEqual("Added 6 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual("Added 6 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
 
         self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
 
@@ -721,10 +747,6 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('My picture two title', wordDoc.paragraphs[3].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[5].text)
-
-        os.remove(finalWordDoc)
-
-        self.deleteFiles(copiedFileNamesList)
 
 
     def testCreateOrUpdateWordDocInsertSelectedImagesListWithCommasAtEndInTwoParagraphsDoc(self):
@@ -735,12 +757,18 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0', '-p 1, 2 ,5-7,10-9'])
-        self.assertEqual(
-            "Added 6 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
-            returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "Added 6 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
+            returnedInfo)
 
         self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
 
@@ -767,10 +795,6 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('My picture two title', wordDoc.paragraphs[3].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[5].text)
-
-        os.remove(finalWordDoc)
-
-        self.deleteFiles(copiedFileNamesList)
 
 
     def deleteFiles(self, fileNamesList):
@@ -805,12 +829,18 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1', '-p 1 2 5-7 10-9 12'])
-        self.assertEqual(
-            "Inserted 6 image(s) before header 1 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
-            returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "Inserted 6 image(s) before header 1 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
+            returnedInfo)
 
         self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
 
@@ -838,10 +868,6 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('My picture two title', wordDoc.paragraphs[21].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[23].text)
 
-        os.remove(finalWordDoc)
-
-        self.deleteFiles(copiedFileNamesList)
-
 
     def testCreateOrUpdateWordDocInsertSelectedImagesListWithSpacesBeforeHeaderTwoInTwoParagraphsDoc(self):
         testImgDir = currentdir + "\\images"
@@ -851,12 +877,18 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i2', '-p 1 2 5-7 10-9 12'])
-        self.assertEqual(
-            "Inserted 6 image(s) before header 2 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
-            returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "Inserted 6 image(s) before header 2 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
+            returnedInfo)
 
         self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
 
@@ -883,10 +915,6 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('My picture two title', wordDoc.paragraphs[21].text)
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[23].text)
-
-        os.remove(finalWordDoc)
-
-        self.deleteFiles(copiedFileNamesList)
 
 
     def testCreateOrUpdateWordDocAddSelectedImagesListWithSpacesInNewDocument(self):
