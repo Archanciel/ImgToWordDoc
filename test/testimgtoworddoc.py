@@ -682,16 +682,62 @@ class TestImgToWordDoc(unittest.TestCase):
         imgFileLst = imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
         self.assertEqual([],imgFileLst)
 
-    def testCreateOrUpdateWordDocInsertSelectedImagesAtEndInTwoParagraphsDoc(self):
+
+    def testCreateOrUpdateWordDocInsertSelectedImagesListWithSpacesAtEndInTwoParagraphsDoc(self):
         testImgDir = currentdir + "\\images"
         copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
 
         initialWordDocNameNoExt = 'twoImgForInsertion'
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
         initialParagraphNumber = len(wordDoc.paragraphs)
-#        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0', '-p 1,2,5-7,10-9'])
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0', '-p 1 2 5-7 10-9 12'])
         self.assertEqual("Added 6 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.", returnedInfo)
+        finalWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[15].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[17].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[18].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[20].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[21].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[23].text)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[0].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[3].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[5].text)
+
+        os.remove(finalWordDoc)
+
+        self.deleteFiles(copiedFileNamesList)
+
+
+    def testCreateOrUpdateWordDocInsertSelectedImagesListWithCommasAtEndInTwoParagraphsDoc(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'twoImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i0', '-p 1, 2 ,5-7,10-9'])
+        self.assertEqual(
+            "Added 6 image(s) at end of document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
+            returnedInfo)
         finalWordDoc = 'twoImgForInsertion1.docx'
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
@@ -749,3 +795,135 @@ class TestImgToWordDoc(unittest.TestCase):
                 shutil.copy(filePathName, toDir)
 
         return fileNameList
+
+
+    def testCreateOrUpdateWordDocInsertSelectedImagesListWithSpacesAtStartInTwoParagraphsDoc(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'twoImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1', '-p 1 2 5-7 10-9 12'])
+        self.assertEqual(
+            "Inserted 6 image(s) before header 1 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
+            returnedInfo)
+        finalWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[15].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[17].text)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[18].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[20].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[21].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[23].text)
+
+        os.remove(finalWordDoc)
+
+        self.deleteFiles(copiedFileNamesList)
+
+
+    def testCreateOrUpdateWordDocInsertSelectedImagesListWithSpacesBeforeHeaderTwoInTwoParagraphsDoc(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'twoImgForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i2', '-p 1 2 5-7 10-9 12'])
+        self.assertEqual(
+            "Inserted 6 image(s) before header 2 in document twoImgForInsertion.docx and saved the result to twoImgForInsertion1.docx.",
+            returnedInfo)
+        finalWordDoc = 'twoImgForInsertion1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[0].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[15].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[17].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[18].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[20].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[21].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[23].text)
+
+        os.remove(finalWordDoc)
+
+        self.deleteFiles(copiedFileNamesList)
+
+
+    def testCreateOrUpdateWordDocAddSelectedImagesListWithSpacesInNewDocument(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'newDocForAddingSelectedImages'
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1', '-p 1 2 5-7 10-9 12'])
+        finalWordDoc = initialWordDocNameNoExt + '.docx'
+        wordDoc = Document(finalWordDoc)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "Added 6 image(s) at end of document newDocForAddingSelectedImages.docx and saved the result to newDocForAddingSelectedImages.docx. Although insertion position 1 was provided, no header paragraph was available at this position and the images were added at the end of the document !",
+            returnedInfo)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, finalParagraphNumber / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[15].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[17].text)
