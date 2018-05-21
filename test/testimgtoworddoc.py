@@ -684,12 +684,7 @@ class TestImgToWordDoc(unittest.TestCase):
 
     def testCreateOrUpdateWordDocInsertSelectedImagesAtEndInTwoParagraphsDoc(self):
         testImgDir = currentdir + "\\images"
-        src_files = os.listdir(testImgDir)
-
-        for file_name in src_files:
-            full_file_name = os.path.join(testImgDir, file_name)
-            if (os.path.isfile(full_file_name)):
-                shutil.copy(full_file_name, currentdir)
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
 
         initialWordDocNameNoExt = 'twoImgForInsertion'
         wordDoc = Document(initialWordDocNameNoExt + '.docx')
@@ -729,5 +724,28 @@ class TestImgToWordDoc(unittest.TestCase):
 
         os.remove(finalWordDoc)
 
-        for file_name in src_files:
-            os.remove(file_name)
+        self.deleteFiles(copiedFileNamesList)
+
+
+    def deleteFiles(self, fileNamesList):
+        for fileName in fileNamesList:
+            os.remove(fileName)
+
+
+    def copyDirContent(self, fromDir, toDir):
+        '''
+        Copy the fromDir files to toDir and returns the list of copied files.
+
+        :param fromDir:
+        :param toDir:
+
+        :return: list of copied file names without path
+        '''
+        fileNameList = os.listdir(fromDir)
+
+        for fileName in fileNameList:
+            filePathName = os.path.join(fromDir, fileName)
+            if (os.path.isfile(filePathName)):
+                shutil.copy(filePathName, toDir)
+
+        return fileNameList
