@@ -45,7 +45,9 @@ def getCommandLineArgs(argList):
                     "point, creates a new document in which the specified images will be added. " \
                     "If the current dir already contains a document with images and comments you " \
                     "want to keep, use the insertion parameter which will insert the new images at " \
-                    "the specified position and preserve the initial content. ")
+                    "the specified position and preserve the initial content. " \
+                    "Without using the -p parameter, all the images of the current dir are collected " \
+                    "for the addition/insertion. -p enables to specify precisely the images to select. ")
     parser.add_argument("-d", "--document", nargs="?", help="existing document to which the images are " \
                                                             "to be added. For your convenience, the initial document is " \
                                                             "not modified. Instead, the original document is copied with a " \
@@ -55,8 +57,8 @@ def getCommandLineArgs(argList):
                              "images. 1 --> start of document (before paragraph 1). " \
                              "0 --> end of document. ")
     parser.add_argument("-p", "--pictures", nargs="*", help="numbers contained in the image file names which are selected " \
-                                                            "to be inserted in the existing document. Exemple: -p 1 8 4-6 9-10 " \
-                                                            "means the images whose name contain the specified numbers will be added or " \
+                                                            "to be inserted in the existing document. Exemple: -p 1 8 4-6 9-10 or " \
+                                                            "-p 1,8, 4-6, 9-10 means the images whose name contain the specified numbers will be added or " \
                                                             "or inserted in ascending number order, in this case 1, 4, 5, 6, 8, 9, 10. " \
                                                             "If this parm is omitted, all the pictures in the curreent " \
                                                             "dir are added or inserted. ")
@@ -368,7 +370,7 @@ def explodeImageNumbersList(imageNumberSpec):
     # handling the case when unit testing causes argparse to return a list containing one string
     # for the -p arg instead of a list of picture numer specs
     if len(imageNumberSpec) == 1:
-        splittedImageNumberSpec = imageNumberSpec[0].split()
+        splittedImageNumberSpec = re.split(r" |,", imageNumberSpec[0])
         if len(splittedImageNumberSpec) > 1:
             imageNumberSpec = splittedImageNumberSpec
 
@@ -379,7 +381,8 @@ def explodeImageNumbersList(imageNumberSpec):
             explodedNumerList = explodeNumberSpec(item)
             numbersSet = numbersSet.union(set(explodedNumerList))
         else:
-            numbersSet.add(int(item))
+            if item.isdigit():
+                numbersSet.add(int(item))
 
     sortedNumbers = list(numbersSet)
     sortedNumbers.sort()
