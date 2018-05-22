@@ -955,3 +955,45 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('10twoDigit_title', wordDoc.paragraphs[15].text)
         self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[17].text)
+
+
+    def testCreateOrUpdateWordDocAddSelectedImagesListWithSpacesInEmptiedDocument(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'emptyDocForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1', '-p 1 2 5-7 10-9 12'])
+        finalWordDoc = initialWordDocNameNoExt + '1.docx'
+        wordDoc = Document(finalWordDoc)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "Added 6 image(s) at end of document emptyDocForInsertion.docx and saved the result to emptyDocForInsertion1.docx. Although insertion position 1 was provided, no header paragraph was available at this position and the images were added at the end of the document !",
+            returnedInfo)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[1].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[3].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[4].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[6].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[7].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[9].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[10].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[12].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[13].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[15].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[16].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[18].text)
