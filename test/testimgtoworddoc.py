@@ -917,7 +917,7 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual('Picture two bullet section', wordDoc.paragraphs[23].text)
 
 
-    def testCreateOrUpdateWordDocAddSelectedImagesListWithSpacesInNewDocument(self):
+    def testCreateOrUpdateWordDocAddSelectedImagesListWithSpacesInNewDocumentWithInsertionPoint(self):
         testImgDir = currentdir + "\\images"
         copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
 
@@ -933,6 +933,86 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual(
             "Added 6 image(s) at end of document newDocForAddingSelectedImages.docx and saved the result to newDocForAddingSelectedImages.docx. Although insertion position 1 was provided, no header paragraph was available at this position and the images were added at the end of the document !",
+            returnedInfo)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, finalParagraphNumber / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[15].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[17].text)
+
+
+    def testCreateOrUpdateWordDocAddSelectedImagesListWithSpacesInNewDocumentNoDocNameNoInsertionPoint(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'test' #name of containing dir since parm -d not specified
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(['-p 1 2 5-7 10-9 12'])
+        finalWordDoc = initialWordDocNameNoExt + '.docx'
+        wordDoc = Document(finalWordDoc)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "test.docx file created with 6 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !",
+            returnedInfo)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        self.assertEqual(6, finalParagraphNumber / 3)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[0].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[2].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[3].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[5].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[6].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[8].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[9].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[11].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[12].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[14].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[15].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[17].text)
+
+
+    def testCreateOrUpdateWordDocAddSelectedImagesListWithSpacesInNewDocumentNoInsertionPoint(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'newDocForAddingSelectedImages'
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-p 1 2 5-7 10-9 12'])
+        finalWordDoc = initialWordDocNameNoExt + '.docx'
+        wordDoc = Document(finalWordDoc)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "newDocForAddingSelectedImages.docx file created with 6 image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !",
             returnedInfo)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
