@@ -47,7 +47,8 @@ def getCommandLineArgs(argList):
                     "want to keep, use the insertion parameter which will insert the new images at " \
                     "the specified position and preserve the initial content. " \
                     "Without using the -p parameter, all the images of the current dir are collected " \
-                    "for the addition/insertion. -p enables to specify precisely the images to select. ")
+                    "for the addition/insertion. -p enables to specify precisely the images to " \
+                    "add/insert using only the numbers contained in the image file names. ")
     parser.add_argument("-d", "--document", nargs="?", help="existing document to which the images are " \
                                                             "to be added. For your convenience, the initial document is " \
                                                             "not modified. Instead, the original document is copied with a " \
