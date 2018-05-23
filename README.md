@@ -1,9 +1,9 @@
 # ImgToWordDoc
-Python command line used utility to add all images of a directory to a new or existing Word document in order to facilitate the creation of documentation.
-The images are added according to the ascending order of the number containes anywhere in their file name.
+Python command line utility used to add all images of a directory to a new or existing Word document in order to facilitate the creation of documentation.
+The images are added according to the ascending order of the number contained anywhere in their file name.
 
 ## Detailed usage help
-###b python ImgToWordDoc.py [-h] [-d [DOCUMENT]] [-i [INSERTIONPOS]] [-p [PICTURES [PICTURES ...]]]
+### python ImgToWordDoc.py [-h] [-d [DOCUMENT]] [-i [INSERTIONPOS]] [-p [PICTURES [PICTURES ...]]]
 
 Adds or inserts all or part of the images contained in the current dir to a
 Word document. Each image is added in a new paragraph. To facilitate further
