@@ -682,6 +682,13 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual(['1.png', 'name3.jpg', '2nom.jpg'],imgFileLst)
 
 
+    def testFilterAccordingToNumberInvalidImgFileName(self):
+        unfilteredImgFileNameLst = ['1.png', 'name3.jpg', '2nom.jpg', 'invalid_no_number.jpg', '4.jpg']
+        numberLst = [1, 2, 3, 5]
+        with self.assertRaises(NameError):
+            imgToWordDoc.filterAccordingToNumber(unfilteredImgFileNameLst, numberLst)
+
+
     def testFilterAccordingToNumberNoMatch(self):
         unfilteredImgFileNameLst = ['1.png', 'name3.jpg', '2nom.jpg', '4.jpg']
         numberLst = [5, 6]
@@ -1077,3 +1084,25 @@ class TestImgToWordDoc(unittest.TestCase):
 
         self.assertEqual('10twoDigit_title', wordDoc.paragraphs[16].text)
         self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[18].text)
+
+
+    def testCreateOrUpdateWordDocAddSelectedImagesListWithInvalidImgFileName(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        invalidFileName = 'invalFileName.jpg'
+
+        with open(invalidFileName, 'w') as f:
+            pass
+
+        initialWordDocNameNoExt = 'emptyDocForInsertion'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1', '-p 1 2 5-7 10-9 12'])
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        self.deleteFiles(copiedFileNamesList)
+        os.remove(invalidFileName)
+
+        self.assertEqual(returnedInfo, "ERROR - Invalid img file name encountered: invalFileName.jpg. Img file names must contain a number for them to be inserted in the right order (depends on this number) !")

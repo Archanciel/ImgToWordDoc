@@ -198,7 +198,16 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
     if imageNumbersToAdd:
         explodedImageNumbersToAdd = explodeImageNumbersList(imageNumbersToAdd)
 
-    imgFileLst = filterAndSortImageFileNames(curDir, explodedImageNumbersToAdd)
+    imgFileLst = None
+
+    try:
+        imgFileLst = filterAndSortImageFileNames(curDir, explodedImageNumbersToAdd)
+    except NameError as e:
+        resultMsg = 'ERROR - ' +  e.args[0]
+        print(resultMsg)
+
+        return resultMsg
+
     doc = None
      
     if userDocumentName:
@@ -419,7 +428,14 @@ def filterAccordingToNumber(fileNameWithNumberLst, numberToKeepList):
     filteredFileNameList = []
 
     for fileName in fileNameWithNumberLst:
-        fileNameNumber = re.search(r'(\d+).*', fileName).group(1)
+        match = re.search(r'(\d+).*', fileName)
+
+        if match == None:
+            raise NameError(
+                "Invalid img file name encountered: {0}. Img file names must contain a number for them to be inserted in the right order (depends on this number) !".format(
+                    fileName))
+        fileNameNumber = match.group(1)
+
         if int(fileNameNumber) in numberToKeepList:
             filteredFileNameList.append(fileName)
 
