@@ -7,7 +7,8 @@ from PIL import Image
 from docx import Document
 from docx.shared import Cm
 import argparse
-from shutil import copyfile
+import shutil
+from datetime import datetime
 
 IMG_MAX_WIDTH = 17.5  # anciennement 19.5
 LATERAL_MARGIN = 2  # anciennement 1
@@ -229,7 +230,7 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
             targetWordFileNameNoExt = curDir.split('\\')[-1]
         doc = Document()
 
-    targetWordFileNameWithTmpExt, targetWordFileNameWithoutExt = determineUniqueFileName(targetWordFileNameNoExt)
+    targetWordFileNameWithWordExt = determineUniqueFileName(targetWordFileNameNoExt)
     addedImgNumber = 0
     isInsertionMode = False
 
@@ -245,8 +246,7 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
         setDocMargins(doc)
         addedImgNumber = addImagesAtEndOfDocument(doc, imgFileLst)
 
-    targetWordFileNameWithWordExt = saveWordFileEnsuringCorrectCreationDate(doc, targetWordFileNameWithTmpExt,
-                                                                            targetWordFileNameWithoutExt)
+    saveWordFileEnsuringCorrectCreationDate(doc, targetWordFileNameWithWordExt)
 
     if userInsertionPos != None:
         if isInsertionMode:
@@ -267,24 +267,23 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
     return resultMsg
 
 
-def saveWordFileEnsuringCorrectCreationDate(doc, targetWordFileNameWithTmpExt, targetWordFileNameWithoutExt):
+def saveWordFileEnsuringCorrectCreationDate(doc, targetWordFileNameWithWordExt):
     '''
-    Since simply using doc.save() creates a Word file with the samw timestamp as the original
-    Word file (in case of updating an existing Word document, a .tmp file is created and then
-    copied as a .docx file which has a up-to-date timestamp.
+    Since simply using doc.save() creates a Word file with the same timestamp as the original
+    Word file (in case of updating an existing Word document, the date and time Word document
+    properties must be explicitely set.
 
-    :param Word doc created with a .tmp extention
-    :param targetWordFileNameWithTmpExt:
-    :param targetWordFileNameWithoutExt:
-
-    :return: the final copied Word doc with a .docx extention
+    :param targetWordFileNameWithWordExt:
     '''
-    doc.save(targetWordFileNameWithTmpExt)
-    targetWordFileNameWithWordExt = targetWordFileNameWithoutExt + WORD_FILE_EXT
-    copyfile(targetWordFileNameWithTmpExt, targetWordFileNameWithWordExt)
-    os.remove(targetWordFileNameWithTmpExt)
-    
-    return targetWordFileNameWithWordExt
+    core_properties = doc.core_properties
+
+    # setting the Word creation/modification date
+    # and time MUST be done with UTC date/time !
+    dateTimeUTCNow = datetime.utcnow()
+
+    core_properties.created = dateTimeUTCNow
+    core_properties.modified = dateTimeUTCNow
+    doc.save(targetWordFileNameWithWordExt)
 
 
 def addImagesAtEndOfDocument(wordDoc, ascSortedImgFileLst):
@@ -379,7 +378,7 @@ def determineUniqueFileName(wordFileName):
 
     :param  wordFileName without extention
     :return wordFileName + incremented number (if wordFileName exists in curr dir) +
-            word file extention, the maybe incremented word file name without extention
+            word file extention
     '''
     i = 1
     lookupWordFileName = wordFileName
@@ -388,7 +387,7 @@ def determineUniqueFileName(wordFileName):
         lookupWordFileName = wordFileName + str(i)
         i += 1
 
-    return lookupWordFileName + TEMP_FILE_EXT, lookupWordFileName
+    return lookupWordFileName + WORD_FILE_EXT
 
 
 def explodeImageNumbersList(imageNumberSpec):

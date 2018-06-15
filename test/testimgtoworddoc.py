@@ -51,8 +51,8 @@ class TestImgToWordDoc(unittest.TestCase):
 
     def testDetermineUniqueFileNameNoWordFileExist(self):
         wordFileName = "notExistFileName"
-        wordFileNameWithExt, _ = imgToWordDoc.determineUniqueFileName(wordFileName)
-        self.assertEqual("notExistFileName.tmp", wordFileNameWithExt)
+        wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
+        self.assertEqual("notExistFileName.docx", wordFileNameWithExt)
 
 
     def testDetermineUniqueFileNameWordFileExistNoSuffixNumber(self):
@@ -69,8 +69,8 @@ class TestImgToWordDoc(unittest.TestCase):
 
         # perform the test
 
-        wordFileNameWithExt, _ = imgToWordDoc.determineUniqueFileName(wordFileName)
-        self.assertEqual("existingFileName1.tmp", wordFileNameWithExt)
+        wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
+        self.assertEqual("existingFileName1.docx", wordFileNameWithExt)
 
         # clean up
 
@@ -96,14 +96,14 @@ class TestImgToWordDoc(unittest.TestCase):
 
         # perform the test
 
-        wordFileNameWithExt, _ = imgToWordDoc.determineUniqueFileName(wordFileName)
+        wordFileNameWithExt = imgToWordDoc.determineUniqueFileName(wordFileName)
 
         # clean up
 
         os.remove(fileNameExt)
         os.remove(fileNameExtSuffixOne)
 
-        self.assertEqual("existingFileName2.tmp", wordFileNameWithExt)
+        self.assertEqual("existingFileName2.docx", wordFileNameWithExt)
 
     def testGetFilesInTestDir(self):
         curDir = os.getcwd()
