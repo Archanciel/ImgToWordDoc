@@ -7,6 +7,7 @@ from PIL import Image
 from docx import Document
 from docx.shared import Cm
 import argparse
+from shutil import copyfile
 
 IMG_MAX_WIDTH = 17.5  # anciennement 19.5
 LATERAL_MARGIN = 2  # anciennement 1
@@ -18,6 +19,7 @@ scnPxHeight = GetSystemMetrics(1)
 SCREEN_DPI = int(math.sqrt(scnPxWidth ** 2 + scnPxHeight ** 2) / 13.3) # 144 old value set on my 1920 x 1080' monitor
 
 WORD_FILE_EXT = ".docx"
+TEMP_FILE_EXT = ".tmp"
 HEADING_ONE_STYLE_NAME_ENGLISH = 'Heading1'
 HEADING_ONE_STYLE_NAME_FRENCH = 'Titre1'
 
@@ -226,8 +228,8 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
         else:
             targetWordFileNameNoExt = curDir.split('\\')[-1]
         doc = Document()
-        
-    targetWordFileNameWithExt = determineUniqueFileName(targetWordFileNameNoExt)
+
+    targetWordFileNameWithTmpExt, targetWordFileNameWithoutExt = determineUniqueFileName(targetWordFileNameNoExt)
     addedImgNumber = 0
     isInsertionMode = False
 
@@ -243,25 +245,46 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
         setDocMargins(doc)
         addedImgNumber = addImagesAtEndOfDocument(doc, imgFileLst)
 
-    doc.save(targetWordFileNameWithExt)
+    targetWordFileNameWithWordExt = saveWordFileEnsuringCorrectCreationDate(doc, targetWordFileNameWithTmpExt,
+                                                                            targetWordFileNameWithoutExt)
 
     if userInsertionPos != None:
         if isInsertionMode:
-            resultMsg = "Inserted {} image(s) before header {} in document {} and saved the result to {}.".format(addedImgNumber, userInsertionPos, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt)
+            resultMsg = "Inserted {} image(s) before header {} in document {} and saved the result to {}.".format(addedImgNumber, userInsertionPos, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithWordExt)
         else:
             if userInsertionPos == 0:
                 resultMsg = "Added {} image(s) at end of document {} and saved the result to {}.".format(
-                    addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt)
+                    addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithWordExt)
             else:
                 resultMsg = "Added {} image(s) at end of document {} and saved the result to {}. Although insertion position {} was provided, no header paragraph was available at this position and the images were added at the end of the document !".format(
-                    addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithExt, userInsertionPos)
+                    addedImgNumber, userDocumentName + WORD_FILE_EXT, targetWordFileNameWithWordExt, userInsertionPos)
     else:
         resultMsg = "{} file created with {} image(s). Manually add auto numbering to the 'Header 1' / 'Titre 1' style !".format(
-            targetWordFileNameWithExt, addedImgNumber)
+            targetWordFileNameWithWordExt, addedImgNumber)
 
     print(resultMsg)
 
     return resultMsg
+
+
+def saveWordFileEnsuringCorrectCreationDate(doc, targetWordFileNameWithTmpExt, targetWordFileNameWithoutExt):
+    '''
+    Since simply using doc.save() creates a Word file with the samw timestamp as the original
+    Word file (in case of updating an existing Word document, a .tmp file is created and then
+    copied as a .docx file which has a up-to-date timestamp.
+
+    :param Word doc created with a .tmp extention
+    :param targetWordFileNameWithTmpExt:
+    :param targetWordFileNameWithoutExt:
+
+    :return: the final copied Word doc with a .docx extention
+    '''
+    doc.save(targetWordFileNameWithTmpExt)
+    targetWordFileNameWithWordExt = targetWordFileNameWithoutExt + WORD_FILE_EXT
+    copyfile(targetWordFileNameWithTmpExt, targetWordFileNameWithWordExt)
+    os.remove(targetWordFileNameWithTmpExt)
+    
+    return targetWordFileNameWithWordExt
 
 
 def addImagesAtEndOfDocument(wordDoc, ascSortedImgFileLst):
@@ -349,13 +372,14 @@ def setDocMargins(doc):
 
 
 def determineUniqueFileName(wordFileName):
-    '''Verify if a file with same name exists and increment the name by one in this case.
+    '''
+    Verify if a file with same name exists and increment the name by one in this case.
 
-    Ex: if hello.docx exists, returns hello1, hello2, etc
+    Ex: if hello.docx exists, returns hello1, hello2, etc. Else, returns hello.docx
 
     :param  wordFileName without extention
     :return wordFileName + incremented number (if wordFileName exists in curr dir) +
-            word file extention
+            word file extention, the maybe incremented word file name without extention
     '''
     i = 1
     lookupWordFileName = wordFileName
@@ -364,7 +388,7 @@ def determineUniqueFileName(wordFileName):
         lookupWordFileName = wordFileName + str(i)
         i += 1
 
-    return lookupWordFileName + WORD_FILE_EXT
+    return lookupWordFileName + TEMP_FILE_EXT, lookupWordFileName
 
 
 def explodeImageNumbersList(imageNumberSpec):
