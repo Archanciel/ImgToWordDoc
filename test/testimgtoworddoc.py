@@ -1106,3 +1106,20 @@ class TestImgToWordDoc(unittest.TestCase):
         os.remove(invalidFileName)
 
         self.assertEqual(returnedInfo, "ERROR - Invalid img file name encountered: invalFileName.jpg. Img file names must contain a number for them to be inserted in the right order (depends on this number) !")
+
+
+    def testCreateOrUpdateWordDocAddSelectedImageInNewDocumentNoDocNameWithInsertionPoint(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'test' #name of containing dir since parm -d not specified
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(['-i 1', '-p 10'])
+        finalWordDoc = initialWordDocNameNoExt + '.docx'
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            'ERROR - When specifying an insertion position (-i), an existing document name (-d) must be provided !',
+            returnedInfo)

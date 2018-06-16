@@ -194,6 +194,12 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
 
     userDocumentName, userInsertionPos, imageNumbersToAdd = getCommandLineArgs(commandLineArgs)
 
+    if userDocumentName == None and userInsertionPos != None:
+        errorMsg = "ERROR - When specifying an insertion position (-i), an existing document name (-d) must be provided !"
+        print(errorMsg)
+
+        return errorMsg
+
     curDir = os.getcwd()
 
     explodedImageNumbersToAdd = None
