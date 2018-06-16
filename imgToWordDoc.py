@@ -33,7 +33,7 @@ def getCommandLineArgs(argList):
     :return: document name (may be None), insertion point and image numbers list to add/insert
     '''
     parser = argparse.ArgumentParser(
-        description="Adds or inserts all or part of the images contained in the current dir to a Word document. Each image " \
+        description="Version 2.0. Adds or inserts all or part of the images contained in the current dir to a Word document. Each image " \
                     "is added in a new paragraph. To facilitate further edition, the image " \
                     "is preceded by a header line and followed by a bullet point section. " \
                     "The images are added according to the ascending order of the number contained in their " \
