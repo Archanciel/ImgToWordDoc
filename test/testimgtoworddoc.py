@@ -109,7 +109,7 @@ class TestImgToWordDoc(unittest.TestCase):
         curDir = os.getcwd()
 
         filesInDir = imgToWordDoc.getFilesInDir(curDir)
-        self.assertEqual(9, len(filesInDir))
+        self.assertEqual(10, len(filesInDir))
 
 
     def testGetFilesInEmptyDir(self):
@@ -1123,3 +1123,51 @@ class TestImgToWordDoc(unittest.TestCase):
         self.assertEqual(
             'ERROR - When specifying an insertion position (-i), an existing document name (-d) must be provided !',
             returnedInfo)
+
+
+    def testCreateOrUpdateWordDocInsertSelectedImagesListWithSpacesBeforeHeaderTwoInTwoParagraphsDocWhereANewParagraphWaaAddedManually(self):
+        testImgDir = currentdir + "\\images"
+        copiedFileNamesList = self.copyDirContent(testImgDir, currentdir)
+
+        initialWordDocNameNoExt = 'twoImgForInsertionWithParagraphAddedManually'
+        wordDoc = Document(initialWordDocNameNoExt + '.docx')
+        initialParagraphNumber = len(wordDoc.paragraphs)
+        returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i2', '-p 1 2 5-7 10-9 12'])
+        finalWordDoc = 'twoImgForInsertionWithParagraphAddedManually1.docx'
+        wordDoc = Document(finalWordDoc)
+        finalParagraphNumber = len(wordDoc.paragraphs)
+
+        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # this does not impact the other tests !
+        os.remove(finalWordDoc)
+        self.deleteFiles(copiedFileNamesList)
+
+        self.assertEqual(
+            "Inserted 6 image(s) before header 2 in document twoImgForInsertionWithParagraphAddedManually.docx and saved the result to twoImgForInsertionWithParagraphAddedManually1.docx.",
+            returnedInfo)
+
+        self.assertEqual(6, (finalParagraphNumber - initialParagraphNumber) / 3)
+
+        self.assertEqual('My picture one title', wordDoc.paragraphs[2].text)
+        self.assertEqual('Picture one bullet section', wordDoc.paragraphs[4].text)
+
+        self.assertEqual('1_title', wordDoc.paragraphs[5].text)
+        self.assertEqual('1_bullet', wordDoc.paragraphs[7].text)
+
+        self.assertEqual('5_title', wordDoc.paragraphs[8].text)
+        self.assertEqual('5_bullet', wordDoc.paragraphs[10].text)
+
+        self.assertEqual('6_title', wordDoc.paragraphs[11].text)
+        self.assertEqual('6_bullet', wordDoc.paragraphs[13].text)
+
+        self.assertEqual('7_title', wordDoc.paragraphs[14].text)
+        self.assertEqual('7_bullet', wordDoc.paragraphs[16].text)
+
+        self.assertEqual('9_title', wordDoc.paragraphs[17].text)
+        self.assertEqual('9_bullet', wordDoc.paragraphs[19].text)
+
+        self.assertEqual('10twoDigit_title', wordDoc.paragraphs[20].text)
+        self.assertEqual('10twoDigit_bullet', wordDoc.paragraphs[22].text)
+
+        self.assertEqual('My picture two title', wordDoc.paragraphs[23].text)
+        self.assertEqual('Picture two bullet section', wordDoc.paragraphs[25].text)
