@@ -10,6 +10,7 @@ import argparse
 import shutil
 from datetime import datetime
 
+
 IMG_MAX_WIDTH = 17.5  # anciennement 19.5
 LATERAL_MARGIN = 2  # anciennement 1
 
@@ -23,6 +24,8 @@ WORD_FILE_EXT = ".docx"
 TEMP_FILE_EXT = ".tmp"
 HEADING_ONE_STYLE_NAME_ENGLISH = 'Heading1'
 HEADING_ONE_STYLE_NAME_FRENCH = 'Titre1'
+HEADING_ONE_STYLE_NAME_ENGLISH_FOR_CREATION = 'Heading 1'
+HEADING_ONE_STYLE_LEVEL_FOR_CREATION = 1
 
 
 def getCommandLineArgs(argList):
@@ -155,7 +158,7 @@ def insertImagesBeforeParagraph(paragraph, imgFileLst):
         imgWidthCm = imgWidthPixel / SCREEN_DPI * 2.54
         paragraphRun.add_picture(imageFileName, width=Cm(min(IMG_MAX_WIDTH, imgWidthCm)))
 
-        paragraph = paragraph.insert_paragraph_before(getTitleParagraphText(imageName), 'Heading 1')
+        paragraph = paragraph.insert_paragraph_before(getTitleParagraphText(imageName), HEADING_ONE_STYLE_NAME_ENGLISH_FOR_CREATION)
 
     return insertedImgNumber
 
@@ -306,7 +309,7 @@ def addImagesAtEndOfDocument(wordDoc, ascSortedImgFileLst):
     for imageFileName in ascSortedImgFileLst:
         # ajout d'un titre avant l'image
         imageName = imageFileName.split('.')[0]
-        wordDoc.add_heading(getTitleParagraphText(imageName), level=1)
+        wordDoc.add_heading(getTitleParagraphText(imageName), level=HEADING_ONE_STYLE_LEVEL_FOR_CREATION)
 
         # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
         im = Image.open(imageFileName)
