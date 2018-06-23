@@ -10,9 +10,10 @@ import argparse
 import shutil
 from datetime import datetime
 
+VERSION_NUMBER = "2.01"
 
-IMG_MAX_WIDTH = 17.5  # anciennement 19.5
-LATERAL_MARGIN = 2  # anciennement 1
+IMG_MAX_WIDTH = 17.5  # anciennement 19.5 on XPS 13
+LATERAL_MARGIN = 2  # anciennement 1 on XPS 13
 
 # calculating SCREEN_DPI constant
 scnPxWidth = GetSystemMetrics(0)
@@ -36,7 +37,7 @@ def getCommandLineArgs(argList):
     :return: document name (may be None), insertion point and image numbers list to add/insert
     '''
     parser = argparse.ArgumentParser(
-        description="Version 2.0. Adds or inserts all or part of the images contained in the current dir to a Word document. Each image " \
+        description="Version {}. Adds or inserts all or part of the images contained in the current dir to a Word document. Each image " \
                     "is added in a new paragraph. To facilitate further edition, the image " \
                     "is preceded by a header line and followed by a bullet point section. " \
                     "The images are added according to the ascending order of the number contained in their " \
@@ -54,7 +55,8 @@ def getCommandLineArgs(argList):
                     "the specified position and preserve the initial content. " \
                     "Without using the -p parameter, all the images of the current dir are collected " \
                     "for the addition/insertion. -p enables to specify precisely the images to " \
-                    "add/insert using only the numbers contained in the image file names. ")
+                    "add/insert using only the numbers contained in the image file names. ".format(VERSION_NUMBER)
+    )
     parser.add_argument("-d", "--document", nargs="?", help="existing document to which the images are " \
                                                             "to be added. For your convenience, the initial document is " \
                                                             "not modified. Instead, the original document is copied with a " \
