@@ -1096,8 +1096,6 @@ class TestImgToWordDoc(unittest.TestCase):
             pass
 
         initialWordDocNameNoExt = 'emptyDocForInsertion'
-        wordDoc = Document(initialWordDocNameNoExt + '.docx')
-        initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1', '-p 1 2 5-7 10-9 12'])
 
         # clean up files written on disc before assertioh checking so that if an assertion fails,
