@@ -336,7 +336,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document('test.docx')
         wordDoc1 = Document('test1.docx')
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(currentdir + '\\test.docx')
         os.remove(currentdir + '\\test1.docx')
@@ -372,7 +372,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordFilePathName = currentdir + '\\test.docx'
         wordDoc = Document(wordFilePathName)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(wordFilePathName)
 
@@ -395,7 +395,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordFilePathName = currentdir + '\\{}.docx'.format(docName)
         wordDoc = Document(wordFilePathName)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(wordFilePathName)
 
@@ -421,7 +421,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
 
@@ -453,7 +453,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
 
@@ -485,7 +485,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
 
@@ -518,7 +518,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
 
@@ -544,7 +544,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
 
@@ -576,7 +576,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
 
@@ -612,7 +612,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
 
@@ -722,7 +722,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -768,7 +768,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -840,7 +840,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -888,7 +888,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -933,7 +933,7 @@ class TestImgToWordDoc(unittest.TestCase):
         finalWordDoc = initialWordDocNameNoExt + '.docx'
         wordDoc = Document(finalWordDoc)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -973,7 +973,7 @@ class TestImgToWordDoc(unittest.TestCase):
         finalWordDoc = initialWordDocNameNoExt + '.docx'
         wordDoc = Document(finalWordDoc)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -1013,7 +1013,7 @@ class TestImgToWordDoc(unittest.TestCase):
         finalWordDoc = initialWordDocNameNoExt + '.docx'
         wordDoc = Document(finalWordDoc)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -1055,7 +1055,7 @@ class TestImgToWordDoc(unittest.TestCase):
         finalWordDoc = initialWordDocNameNoExt + '1.docx'
         wordDoc = Document(finalWordDoc)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
@@ -1100,7 +1100,7 @@ class TestImgToWordDoc(unittest.TestCase):
         initialParagraphNumber = len(wordDoc.paragraphs)
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(["-d{}".format(initialWordDocNameNoExt), '-i1', '-p 1 2 5-7 10-9 12'])
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         self.deleteFiles(copiedFileNamesList)
         os.remove(invalidFileName)
@@ -1116,7 +1116,7 @@ class TestImgToWordDoc(unittest.TestCase):
         returnedInfo = imgToWordDoc.createOrUpdateWordDocWithImgInDir(['-i 1', '-p 10'])
         finalWordDoc = initialWordDocNameNoExt + '.docx'
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         self.deleteFiles(copiedFileNamesList)
 
@@ -1137,7 +1137,7 @@ class TestImgToWordDoc(unittest.TestCase):
         wordDoc = Document(finalWordDoc)
         finalParagraphNumber = len(wordDoc.paragraphs)
 
-        # clean up files written on disc before assertioh checking so that if an assertion fails,
+        # clean up files written on disc before assertion checking so that if an assertion fails,
         # this does not impact the other tests !
         os.remove(finalWordDoc)
         self.deleteFiles(copiedFileNamesList)
