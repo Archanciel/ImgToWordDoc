@@ -3,7 +3,9 @@ Python command line utility used to add all images of a directory to a new or ex
 The images are added according to the ascending order of the number contained anywhere in their file name.
 
 ## Detailed usage help
-### python ImgToWordDoc.py [-h] [-d [DOCUMENT]] [-i [INSERTIONPOS]] [-p [PICTURES [PICTURES ...]]]
+#### ...\venv\scripts\python runs Python interpreter located in the virtual project environment.
+### To executes the script, open a dos window in the dir containing the images and copy/paste the command line below:
+#### D:\Development\Python\ImgToWordDoc\venv\scripts\python D:\Development\Python\ImgToWordDoc\imgToWordDoc.py [-h] [-d [DOCUMENT]] [-i [INSERTIONPOS]] [-p [PICTURES [PICTURES ...]]]
 
 Adds or inserts all or part of the images contained in the current dir to a
 Word document. Each image is added in a new paragraph. To facilitate further
@@ -47,4 +49,4 @@ images to add/insert using only the numbers contained in the image file names.
               added or inserted.
 ## Required libraries
 * python-docx
-* pillow
+* pypiwin32
