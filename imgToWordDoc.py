@@ -10,7 +10,7 @@ import argparse
 import shutil
 from datetime import datetime
 
-VERSION_NUMBER = "2.01"
+VERSION_NUMBER = "2.1"
 
 IMG_MAX_WIDTH = 17.5  # anciennement 19.5 on XPS 13
 LATERAL_MARGIN = 2  # anciennement 1 on XPS 13
@@ -55,7 +55,8 @@ def getCommandLineArgs(argList):
                     "the specified position and preserve the initial content. " \
                     "Without using the -p parameter, all the images of the current dir are collected " \
                     "for the addition/insertion. -p enables to specify precisely the images to " \
-                    "add/insert using only the numbers contained in the image file names. ".format(VERSION_NUMBER)
+                    "add/insert using only the numbers contained in the image file names. " \
+                    "COMMAND LINE EXAMPLE EXECUTED IN THE DIR CONTAINING THE IMAGES: D:\\Development\\Python\\ImgToWordDoc\\venv\\scripts\\python D:\\Development\\Python\\ImgToWordDoc\\imgToWordDoc.py".format(VERSION_NUMBER)
     )
     parser.add_argument("-d", "--document", nargs="?", help="existing document to which the images are " \
                                                             "to be added. For your convenience, the initial document is " \
