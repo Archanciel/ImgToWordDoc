@@ -311,7 +311,15 @@ def addImagesAtEndOfDocument(wordDoc, ascSortedImgFileLst):
 
     for imageFileName in ascSortedImgFileLst:
         # ajout d'un titre avant l'image
-        imageName = imageFileName.split('.')[0]
+        imageFileNameComponentLst = imageFileName.split('.')
+        imageFileNameComponentNb = len(imageFileNameComponentLst)
+        
+        if imageFileNameComponentNb > 2:
+            # the case is the image file name contains a dot. Ex: Pubspec.yaml ressource file problem 13.jpg
+            imageName = '.'.join(imageFileNameComponentLst[0 : imageFileNameComponentNb - 1])
+        else:
+            imageName = imageFileNameComponentLst[0]
+            
         wordDoc.add_heading(getTitleParagraphText(imageName), level=HEADING_ONE_STYLE_LEVEL_FOR_CREATION)
 
         # ajout de l'image. Si l'image est plus large que la largeur maximale, elle est réduite
