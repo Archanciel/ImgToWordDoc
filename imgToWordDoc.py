@@ -260,7 +260,7 @@ def createOrUpdateWordDocWithImgInDir(commandLineArgs=None):
 
     saveWordFileEnsuringCorrectCreationDate(doc, targetWordFileNameWithWordExt)
 
-    if WORD_FILE_EXT in userDocumentName:
+    if userDocumentName and WORD_FILE_EXT in userDocumentName:
         resultMsgDocExtension = ''
     else:
         resultMsgDocExtension = WORD_FILE_EXT
