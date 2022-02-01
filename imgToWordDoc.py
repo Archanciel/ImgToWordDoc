@@ -51,7 +51,7 @@ def getCommandLineArgs(argList):
                     "Using the utility in add mode, i.e. without specifying an insertion " \
                     "point, creates a new document in which the specified images will be added. " \
                     "If the current dir already contains a document with images and comments you " \
-                    "want to keep, use the insertion parameter which will insert the new images at " \
+                    "want to keep, use the insertion parameter which will insert the new images before " \
                     "the specified position and preserve the initial content. " \
                     "Without using the -p parameter, all the images of the current dir are collected " \
                     "for the addition/insertion. -p enables to specify precisely the images to " \
@@ -65,7 +65,7 @@ def getCommandLineArgs(argList):
     parser.add_argument("-i", "--insertionPos", type=int, nargs="?",
                         help="paragraph number BEFORE which to insert the " \
                              "images. 1 --> start of document (before paragraph 1). " \
-                             "0 --> end of document. ")
+                             "0 --> end of document (before paragraph 0, i.e. before document start). ")
     parser.add_argument("-p", "--pictures", nargs="*", help="numbers contained in the image file names which are selected " \
                                                             "to be inserted in the existing document. Exemple: -p 1 8 4-6 9-10 or " \
                                                             "-p 1,8, 4-6, 9-10 means the images whose name contain the specified numbers will be added or " \
