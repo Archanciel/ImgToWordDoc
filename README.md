@@ -50,3 +50,4 @@ images to add/insert using only the numbers contained in the image file names.
 ## Required libraries
 * python-docx
 * pypiwin32
+* pillow
